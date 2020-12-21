@@ -10,18 +10,30 @@ public class Board  implements Ilayout, Cloneable{
     private int status;
     private char currentPlayer;
 
-
+    /**
+     * Constructor where a bidimensional char array is passed as an argument, creating a Board object.
+     */
     public Board(char[][] board) {
         this.board = board;
         setCurrentPlayer();
     }
 
 
+    /**
+     * Calculates the hashcode of a Board object.
+     */
     @Override
     public int hashCode() {
         return Arrays.hashCode(board);
     }
 
+    /**
+     * Verifies if an object is a Board and if so, then verifies if two Board objects are equal,
+     * that's if all their positions hold the same values.
+     *
+     * @param o other object to be compared
+     * @return boolean
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -37,6 +49,11 @@ public class Board  implements Ilayout, Cloneable{
     }
 
 
+    /**
+     * Determines who's the next player to make a move, according to the current Board, and sets the object variable.
+     *
+     *
+     */
     private void setCurrentPlayer()
     {
         int playerXmoves = 0;
@@ -61,7 +78,12 @@ public class Board  implements Ilayout, Cloneable{
         return 0;
     }
 
-    //Falta a otimização na children
+    /** Missing optimization
+     * Computes a List containing the boards with all the possible moves for the current player.
+     *
+     * @return children of this board.
+     * @throws CloneNotSupportedException in case it cannot create a new board to hold the new positions.
+     */
     @Override
     public List<Ilayout> children() throws CloneNotSupportedException {
 
@@ -92,7 +114,7 @@ public class Board  implements Ilayout, Cloneable{
     }
 
     /**
-     * The possibility to create a deep copy of the Board.
+     * Creates a deepcopy of Board object.
      *
      * @return deep copy of this.board.
      * @throws CloneNotSupportedException
