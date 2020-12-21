@@ -1,12 +1,13 @@
 import java.util.Arrays;
 import java.util.List;
 
-public class Board implements Ilayout {
+public class Board  implements Ilayout{
 
     private static final int dim = 3;
     private char[][] board;
     private int status;
     private static final int openSlots = dim * dim;
+
 
     /**
      * Constructor without any argument. It creates the board array as an empty array.
@@ -33,38 +34,42 @@ public class Board implements Ilayout {
         return board;
     }
 
+
     /**
-     * 1 = X
-     * 0 = O
-     * -1 = Nothing?
-     *
-     * @param str string format ("1")
+     * Create a new board given the rows of the game
+     * @param row1 First row of tic tac toe game
+     * @param row2 First row of tic tac toe game
+     * @param row3 First row of tic tac toe game
      * @throws IllegalStateException in case the Java application is not in an appropriate state for the requested
      *                               operation.
      */
     public Board(String row1, String row2, String row3) throws IllegalStateException {
+        //Split each argument into characters
         String[] row1Splitted = row1.split("");
         String[] row2Splitted = row2.split("");
         String[] row3Splitted = row3.split("");
 
-        if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim) {
+        //Throw exception in case the board is incomplete
+        if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim)  {
             throw new IllegalStateException("Invalid arg in Board constructor");
         }
 
-
+        //New board
         board = new char[dim][dim];
         int result = 0;
+        //Fill the first row
         for (int i = result; i < dim; i++) {
             board[0][i] = row1Splitted[i].charAt(0);
         }
+        //Fill the second row
         for (int i = result; i < dim; i++) {
             board[1][i] = row2Splitted[i].charAt(0);
         }
+        //Fill the third row
         for (int i = result; i < dim; i++) {
             board[2][i] = row3Splitted[i].charAt(0);
         }
     }
-
 
     /**
      * The possibility to create a deep copy of the Board.
@@ -82,11 +87,20 @@ public class Board implements Ilayout {
 //        }
 //        return boardCopy;
 //    }
+
+
+    /**
+     * String representation of the tic tac toe board. Where "_" indicates a blank space.
+     * @return String
+     */
     public String toString() {
         String result = "";
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
-                result = result.concat(String.valueOf(board[i][j]));
+                if(j == dim - 1)
+                    result = result.concat(String.valueOf(board[i][j]));
+                else
+                    result = result.concat(String.valueOf(board[i][j])) + "|";
             }
             result = result.concat("\n");
         }
@@ -126,9 +140,12 @@ public class Board implements Ilayout {
         //número de children
     }
 
+
+
     public int getOpenSlots() {
         return openSlots;
     }
+
 
     @Override
     public String getStatus() {
