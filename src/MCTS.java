@@ -16,6 +16,7 @@ class MCTS {
         private int winCount;
         private char mainPiece;
         private int playerTurn;
+        private int openSlots;
 
         public void setLayout(Ilayout layout) {
             this.layout = layout;
@@ -77,6 +78,7 @@ class MCTS {
 
             if (father != null) {
                 playerTurn = (father.playerTurn + l.getTurn()) % 2; //Second player is 1
+                openSlots = (father.playerTurn+ l.getTurn());
             } else playerTurn = 0; //First player is 0
         }
 
@@ -184,6 +186,7 @@ class MCTS {
 
         while (tempNode.getLayout().getStatus().equals("in progress"))
         {
+            System.out.println(tempNode.getLayout());
             tempNode = RandomUniform.pickRandom(sucessores(tempNode));
             tempNode.father = null;
         }
@@ -192,8 +195,7 @@ class MCTS {
 
         if((status.equals("circles win") && tempNode.getMainPiece() == '0') || (status.equals("crosses win") && tempNode.getMainPiece() == 'X')) {
             result = 1;
-        } else if(status.equals("draw")) {
-            result = 0;
+        } else if(status.equals("draw")) { //do nothing
         } else {
             result = -1;
         }

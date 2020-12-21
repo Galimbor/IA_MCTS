@@ -7,10 +7,8 @@ public class Board implements Ilayout, Cloneable {
     private static final int dim = 3;
     private char[][] board;
     private String status;
-    private static final int openSlots = dim * dim;
+    private int openSlots = dim * dim;
     private char currentPlayer;
-
-
 
 
     /**
@@ -176,6 +174,7 @@ public class Board implements Ilayout, Cloneable {
         if (playerXmoves > player0moves) this.currentPlayer = '0';
         else this.currentPlayer = 'X';
 
+        setOpenSlots(dim * dim - (playerXmoves + player0moves));
     }
 
 
@@ -217,6 +216,10 @@ public class Board implements Ilayout, Cloneable {
 
     public int getOpenSlots() {
         return openSlots;
+    }
+
+    public void setOpenSlots(int openSlots) {
+        this.openSlots = openSlots;
     }
 
     /**

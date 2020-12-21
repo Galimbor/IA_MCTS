@@ -9,7 +9,6 @@ public class RandomUniform {
         int size = nodes.size();
         Random rand = new Random();
         int randomIndex = rand.nextInt(size);
-
         return nodes.get(randomIndex);
     }
 
