@@ -1,11 +1,12 @@
 import java.util.Arrays;
 import java.util.List;
 
-public class Board  implements Ilayout{
+public class Board implements Ilayout {
 
     private static final int dim = 3;
     private char[][] board;
     private int status;
+    private static final int openSlots = dim * dim;
 
     /**
      * Constructor without any argument. It creates the board array as an empty array.
@@ -33,6 +34,11 @@ public class Board  implements Ilayout{
     }
 
     /**
+     * 1 = X
+     * 0 = O
+     * -1 = Nothing?
+     *
+     * @param str string format ("1")
      * @throws IllegalStateException in case the Java application is not in an appropriate state for the requested
      *                               operation.
      */
@@ -41,7 +47,7 @@ public class Board  implements Ilayout{
         String[] row2Splitted = row2.split("");
         String[] row3Splitted = row3.split("");
 
-        if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim)  {
+        if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim) {
             throw new IllegalStateException("Invalid arg in Board constructor");
         }
 
@@ -76,14 +82,6 @@ public class Board  implements Ilayout{
 //        }
 //        return boardCopy;
 //    }
-
-
-
-
-
-
-
-
     public String toString() {
         String result = "";
         for (int i = 0; i < dim; i++) {
@@ -128,11 +126,100 @@ public class Board  implements Ilayout{
         //número de children
     }
 
-    @Override
-    public int getStatus() {
-        return 0; //Temos de verificar linhas, colunas e diagonais e consoante
-        // o resultado atribuir um valor ao status do board
-        //Se o jogador 1 ganhou, se o jogador 2 ganhou, se empataram
-        // ou se o jogo continua em execução
+    public int getOpenSlots() {
+        return openSlots;
     }
+
+    @Override
+    public String getStatus() {
+        String result = "in progress";
+        if (checkCircles()) {
+            result = "circles win";
+        } else if (checkCrosses()) {
+            result = "crosses win";
+        } else if (checkDraw()) {
+            result = "draw";
+        }
+        return result;
+    }
+
+
+    private boolean checkDraw() {
+        boolean result = false;
+        if (this.getOpenSlots() == 0)
+            result = true;
+        return result;
+    }
+
+    public boolean checkRows(char piece) {
+        boolean result = false;
+        for (int i = 0; i < dim; i++) {
+            int j = 0;
+            int counter = 0;
+            while (j < dim && this.board[i][j] == piece) {
+                counter++;
+                j++;
+                if (counter == 3)
+                    result = true;
+            }
+        }
+        return result;
+    }
+
+    public boolean checkColumns(char piece) {
+        boolean result = false;
+        for (int j = 0; j < dim; j++) {
+            int i = 0;
+            int counter = 0;
+            while (i < dim && this.board[i][j] == piece) {
+                counter++;
+                i++;
+                if (counter == 3)
+                    result = true;
+            }
+        }
+        return result;
+    }
+
+
+    public boolean checkDiags(char piece) {
+        boolean result = false;
+        int j = 0;
+        int counter = 0;
+        while (j < dim && this.board[j][j] == piece) {
+            counter++;
+            j++;
+            if (counter == 3)
+                result = true;
+        }
+        j = 0;
+        int i = dim - 1;
+        counter = 0;
+        while (j < dim && i >= 0 && this.board[i][j] == piece) {
+            counter++;
+            j++;
+            i--;
+            if (counter == 3)
+                result = true;
+        }
+
+        return result;
+    }
+
+    private boolean checkCircles() {
+        boolean result = false;
+        char piece = '0';
+        if (checkRows(piece) || checkDiags(piece) || checkColumns(piece))
+            result = true;
+        return result;
+    }
+
+    private boolean checkCrosses() {
+        boolean result = false;
+        char piece = 'X';
+        if (checkRows(piece) || checkDiags(piece) || checkColumns(piece))
+            result = true;
+        return result;
+    }
+
 }

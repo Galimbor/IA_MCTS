@@ -7,7 +7,7 @@ class MCTS {
      *
      * @inv g >= 0
      */
-    static class State  {
+    static class State {
 
         private Ilayout layout;
         private State father;
@@ -39,11 +39,9 @@ class MCTS {
         public State(Ilayout l, State n) {
             layout = l;
             father = n;
-            if(father != null)
-            {
-                playerTurn = (father.playerTurn + l.getTurn()) %2; //Second player is 1
-            }
-            else playerTurn = 0; //First player is 0
+            if (father != null) {
+                playerTurn = (father.playerTurn + l.getTurn()) % 2; //Second player is 1
+            } else playerTurn = 0; //First player is 0
         }
 
         public void setChildArray(List<State> childArray) {
@@ -76,7 +74,6 @@ class MCTS {
         }
 
 
-
         /**
          * Equals override to compare the configurations of a given state layout.
          *
@@ -90,16 +87,12 @@ class MCTS {
             State state = (State) o;
             return layout.equals(state.layout);
         }
-
-
-
     }
 
 
     protected Queue<State> abertos;//This might hold the nodes that still need to be seen
     private List<State> fechados; //This might hold the depleted notes(have been completely visited)
     private State actual; // The current node about to me explored?
-
 
 
     /**
@@ -125,10 +118,9 @@ class MCTS {
 
 
     //Selection part of MCTS(using UCT)
-    private State selection(State root)
-    {
+    private State selection(State root) {
         State node = root;
-        while(node.getChildArray().size() != 0) //It has to have children
+        while (node.getChildArray().size() != 0) //It has to have children
         {
             node = UCT.findBestNodeUsingUCT(node); //We should use an interface for this
         }
@@ -146,42 +138,32 @@ class MCTS {
 
 
     //Simulation using a rollout policy random uniform
-    private int simulation(State node)
-    {
+    private int simulation(State node) {
         State tempNode = node;
-        while(!tempNode.getChildArray().isEmpty()) //Não é isto mas sim END OF THE GAME
+        while (!tempNode.getChildArray().isEmpty()) //Não é isto mas sim END OF THE GAME
         {
             tempNode = RandomUniform.pickRandom(tempNode.getChildArray());
-
         }
-        return tempNode.getLayout().getStatus(); //This tell me if the leaf is a win or loss
-                                                    // or a draw
-
+        //TODO return tempNode.getLayout().getStatus(); //This tell me if the leaf is a win or loss
+        // or a draw
     }
-
 
 
     //backpropagation
-    private void backpropagate(State node, int result)
-    {   int win = 0;
-        if(result == 1)
-        {
+    private void backpropagate(State node, int result) {
+        int win = 0;
+        if (result == 1) {
             win = 1; //porra feia
         }
-        while(node.father != null)
-        {
-
+        while (node.father != null) {
             node.setWinCount(node.getWinCount() + win);
             node.setVisitCount(node.getVisitCount() + 1);
         }
-
     }
 
 
-
     //best_child
-    private State bestChild(State root)
-    {
+    private State bestChild(State root) {
         //Returning the root child who has the most visits
         return Collections.max(root.getChildArray(), Comparator.comparing(c -> c.getVisitCount()
         ));
@@ -192,7 +174,7 @@ class MCTS {
      * Given an initial and final configuration, the algorithm will find the shortest path between those two
      * configuration. It uses the Best-First Algorithm.
      *
-     * @param s    initial layout.
+     * @param s initial layout.
      * @return the iterator of the list that contains the states from the initial to the final layout.
      * @throws CloneNotSupportedException
      * @pre true.
@@ -204,14 +186,13 @@ class MCTS {
         long end = start + 10000; // 10 seconds
 
         //Root of our tree
-        State root = new State(s,null);
+        State root = new State(s, null);
 
-        while(System.currentTimeMillis() < end)
-        {
+        while (System.currentTimeMillis() < end) {
             actual = selection(root);
             expansion(actual);
             int simulation_result = simulation(actual);
-            backpropagate(actual,simulation_result);
+            backpropagate(actual, simulation_result);
         }
         return bestChild(root);
 
