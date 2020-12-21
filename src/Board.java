@@ -32,25 +32,31 @@ public class Board  implements Ilayout{
         return board;
     }
 
-    /** 1 = X
-     *  0 = O
-     *  -1 = Nothing?
-     * @param str string format ("1")
+    /**
      * @throws IllegalStateException in case the Java application is not in an appropriate state for the requested
      *                               operation.
      */
     public Board(String row1, String row2, String row3) throws IllegalStateException {
-//        if (str.length() != dim * dim) throw new IllegalStateException("Invalid arg in Board constructor");
+        String[] row1Splitted = row1.split("");
+        String[] row2Splitted = row2.split("");
+        String[] row3Splitted = row3.split("");
+
+        if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim)  {
+            throw new IllegalStateException("Invalid arg in Board constructor");
+        }
+
+
         board = new char[dim][dim];
-        int si = 0;
-        for (int i = 0; i < dim; i++)
-            for (int j = 0; j < dim; j++) {
-                if(str.charAt(si) == ' ' )
-                    board[i][j] = -1;
-                else{
-                    board[i][j] = Character.getNumericValue(str.charAt(si++));
-                }
-            }
+        int result = 0;
+        for (int i = result; i < dim; i++) {
+            board[0][i] = row1Splitted[i].charAt(0);
+        }
+        for (int i = result; i < dim; i++) {
+            board[1][i] = row2Splitted[i].charAt(0);
+        }
+        for (int i = result; i < dim; i++) {
+            board[2][i] = row3Splitted[i].charAt(0);
+        }
     }
 
 
