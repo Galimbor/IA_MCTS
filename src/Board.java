@@ -4,15 +4,32 @@ import java.util.List;
 public class Board  implements Ilayout{
 
     private static final int dim = 3;
-    private int[][] board;
-
+    private char[][] board;
     private int status;
 
     /**
      * Constructor without any argument. It creates the board array as an empty array.
      */
     public Board() {
-        board = new int[dim][dim];
+        char[][] b = new char[dim][dim];
+        this.board = initializeBoard(b);
+    }
+
+
+    /**
+     * Initialize a new board without any values.
+     */
+    public char[][] initializeBoard(char[][] b) {
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                b[i][j] = '_';
+            }
+        }
+        return b;
+    }
+
+    public char[][] getBoard() {
+        return board;
     }
 
     /** 1 = X
@@ -22,9 +39,9 @@ public class Board  implements Ilayout{
      * @throws IllegalStateException in case the Java application is not in an appropriate state for the requested
      *                               operation.
      */
-    public Board(String str) throws IllegalStateException {
-        if (str.length() != dim * dim) throw new IllegalStateException("Invalid arg in Board constructor");
-        board = new int[dim][dim];
+    public Board(String row1, String row2, String row3) throws IllegalStateException {
+//        if (str.length() != dim * dim) throw new IllegalStateException("Invalid arg in Board constructor");
+        board = new char[dim][dim];
         int si = 0;
         for (int i = 0; i < dim; i++)
             for (int j = 0; j < dim; j++) {
@@ -43,16 +60,16 @@ public class Board  implements Ilayout{
      * @return deep copy of this.board.
      * @throws CloneNotSupportedException
      */
-    protected Object clone() throws CloneNotSupportedException {
-        Board boardCopy = new Board();
-        boardCopy.board = new int[dim][dim];
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-                boardCopy.board[i][j] = this.board[i][j];
-            }
-        }
-        return boardCopy;
-    }
+//    protected Object clone() throws CloneNotSupportedException {
+//        Board boardCopy = new Board();
+//        boardCopy.board = new int[dim][dim];
+//        for (int i = 0; i < dim; i++) {
+//            for (int j = 0; j < dim; j++) {
+//                boardCopy.board[i][j] = this.board[i][j];
+//            }
+//        }
+//        return boardCopy;
+//    }
 
 
 
