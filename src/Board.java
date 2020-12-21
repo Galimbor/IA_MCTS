@@ -1,13 +1,25 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Board  implements Ilayout{
+public class Board implements Ilayout, Cloneable {
 
     private static final int dim = 3;
     private char[][] board;
-    private int status;
+    private String status;
     private static final int openSlots = dim * dim;
+    private char currentPlayer;
 
+
+
+
+    /**
+     * Constructor where a bidimensional char array is passed as an argument, creating a Board object.
+     */
+    public Board(char[][] board) {
+        this.board = board;
+        setCurrentPlayer();
+    }
 
     /**
      * Constructor without any argument. It creates the board array as an empty array.
@@ -37,6 +49,7 @@ public class Board  implements Ilayout{
 
     /**
      * Create a new board given the rows of the game
+     *
      * @param row1 First row of tic tac toe game
      * @param row2 First row of tic tac toe game
      * @param row3 First row of tic tac toe game
@@ -50,7 +63,7 @@ public class Board  implements Ilayout{
         String[] row3Splitted = row3.split("");
 
         //Throw exception in case the board is incomplete
-        if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim)  {
+        if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim) {
             throw new IllegalStateException("Invalid arg in Board constructor");
         }
 
@@ -70,6 +83,7 @@ public class Board  implements Ilayout{
             board[2][i] = row3Splitted[i].charAt(0);
         }
     }
+
 
     /**
      * The possibility to create a deep copy of the Board.
@@ -91,13 +105,14 @@ public class Board  implements Ilayout{
 
     /**
      * String representation of the tic tac toe board. Where "_" indicates a blank space.
+     *
      * @return String
      */
     public String toString() {
         String result = "";
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
-                if(j == dim - 1)
+                if (j == dim - 1)
                     result = result.concat(String.valueOf(board[i][j]));
                 else
                     result = result.concat(String.valueOf(board[i][j])) + "|";
@@ -114,6 +129,18 @@ public class Board  implements Ilayout{
         return Arrays.hashCode(board);
     }
 
+
+    public char getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    /**
+     * Verifies if an object is a Board and if so, then verifies if two Board objects are equal,
+     * that's if all their positions hold the same values.
+     *
+     * @param o other object to be compared
+     * @return boolean
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -128,22 +155,81 @@ public class Board  implements Ilayout{
         return true;
     }
 
+    /**
+     * Determines who's the next player to make a move, according to the current Board, and sets the object variable.
+     */
+    private void setCurrentPlayer() {
+        int playerXmoves = 0;
+        int player0moves = 0;
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                if (this.board[i][j] == 'X')
+                    playerXmoves++;
+                else if (this.board[i][j] == '0')
+                    player0moves++;
+            }
+
+        }
+        if (playerXmoves > player0moves) this.currentPlayer = '0';
+        else this.currentPlayer = 'X';
+
+    }
+
 
     @Override
     public int getTurn() {
         return 1; //this is still not great
     }
 
+    /**
+     * Missing optimization
+     * Computes a List containing the boards with all the possible moves for the current player.
+     *
+     * @return children of this board.
+     * @throws CloneNotSupportedException in case it cannot create a new board to hold the new positions.
+     */
     @Override
     public List<Ilayout> children() throws CloneNotSupportedException {
-        return null;//Fazemos a children utilizando aquela forma inteliegente para reduzir o
-        //número de children
+
+        List<Ilayout> children = new ArrayList<>();
+        char nextPiece;
+
+        if (this.currentPlayer == '0') nextPiece = '0';
+        else nextPiece = 'X';
+
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                if (this.board[i][j] == '-') {
+                    Board boardCopy = (Board) this.clone();
+                    boardCopy.board[i][j] = nextPiece;
+                    children.add(boardCopy);
+                }
+            }
+        }
+
+        return children;
+
     }
-
-
 
     public int getOpenSlots() {
         return openSlots;
+    }
+
+    /**
+     * Creates a deepcopy of Board object.
+     *
+     * @return deep copy of this.board.
+     * @throws CloneNotSupportedException
+     */
+    protected Object clone() throws CloneNotSupportedException {
+        Board boardCopy = (Board) super.clone();
+        boardCopy.board = new char[dim][dim];
+        for (int i = 0; i < dim; i++) {
+            for (int j = 0; j < dim; j++) {
+                boardCopy.board[i][j] = this.board[i][j];
+            }
+        }
+        return boardCopy;
     }
 
 

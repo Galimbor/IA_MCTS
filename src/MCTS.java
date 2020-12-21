@@ -146,6 +146,7 @@ class MCTS {
         }
         //TODO return tempNode.getLayout().getStatus(); //This tell me if the leaf is a win or loss
         // or a draw
+        return 0;
     }
 
 
