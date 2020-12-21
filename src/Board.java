@@ -82,6 +82,9 @@ public class Board implements Ilayout, Cloneable {
         for (int i = result; i < dim; i++) {
             board[2][i] = row3Splitted[i].charAt(0);
         }
+
+        //Set current player
+        setCurrentPlayer();
     }
 
 
@@ -199,9 +202,10 @@ public class Board implements Ilayout, Cloneable {
 
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {
-                if (this.board[i][j] == '-') {
+                if (this.board[i][j] == '_') {
                     Board boardCopy = (Board) this.clone();
                     boardCopy.board[i][j] = nextPiece;
+                    boardCopy.setCurrentPlayer();
                     children.add(boardCopy);
                 }
             }

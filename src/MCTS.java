@@ -14,8 +14,28 @@ class MCTS {
 
         private int visitCount;
         private int winCount;
-
+        private char mainPiece;
         private int playerTurn;
+
+        public void setLayout(Ilayout layout) {
+            this.layout = layout;
+        }
+
+        public void setFather(State father) {
+            this.father = father;
+        }
+
+        public void setMainPiece(char mainPiece) {
+            this.mainPiece = mainPiece;
+        }
+
+        public void setPlayerTurn(int playerTurn) {
+            this.playerTurn = playerTurn;
+        }
+
+        public void setWinStatus(int winStatus) {
+            this.winStatus = winStatus;
+        }
 
         private int winStatus;// thils will the in the board
 
@@ -30,6 +50,18 @@ class MCTS {
             return layout;
         }
 
+        public char getMainPiece() {
+            return mainPiece;
+        }
+
+        public int getPlayerTurn() {
+            return playerTurn;
+        }
+
+        public int getWinStatus() {
+            return winStatus;
+        }
+
         /**
          * Constructor
          *
@@ -39,6 +71,10 @@ class MCTS {
         public State(Ilayout l, State n) {
             layout = l;
             father = n;
+            visitCount = 0;
+            winCount = 0;
+            mainPiece = 'X';
+
             if (father != null) {
                 playerTurn = (father.playerTurn + l.getTurn()) % 2; //Second player is 1
             } else playerTurn = 0; //First player is 0
@@ -138,15 +174,31 @@ class MCTS {
 
 
     //Simulation using a rollout policy random uniform
-    private int simulation(State node) {
+    public int simulation(State node) throws CloneNotSupportedException {
+        //End result
+        int result = 0;
+
+        //Node randomly choosen
         State tempNode = node;
-        while (!tempNode.getChildArray().isEmpty()) //Não é isto mas sim END OF THE GAME
+
+
+        while (tempNode.getLayout().getStatus().equals("in progress"))
         {
-            tempNode = RandomUniform.pickRandom(tempNode.getChildArray());
+            tempNode = RandomUniform.pickRandom(sucessores(tempNode));
+            tempNode.father = null;
         }
-        //TODO return tempNode.getLayout().getStatus(); //This tell me if the leaf is a win or loss
-        // or a draw
-        return 0;
+        System.out.println(tempNode.getLayout());
+        String status =  tempNode.getLayout().getStatus();
+
+        if((status.equals("circles win") && tempNode.getMainPiece() == '0') || (status.equals("crosses win") && tempNode.getMainPiece() == 'X')) {
+            result = 1;
+        } else if(status.equals("draw")) {
+            result = 0;
+        } else {
+            result = -1;
+        }
+
+        return result;
     }
 
 
@@ -191,8 +243,14 @@ class MCTS {
 
         while (System.currentTimeMillis() < end) {
             actual = selection(root);
-            expansion(actual);
-            int simulation_result = simulation(actual);
+            int simulation_result;
+            if(actual.visitCount != 0)
+            {
+                expansion(actual);
+                simulation_result = simulation(actual.childArray.get(0));
+            } else {
+                simulation_result = simulation(actual);
+            }
             backpropagate(actual, simulation_result);
         }
         return bestChild(root);
