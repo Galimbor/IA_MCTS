@@ -16,7 +16,6 @@ class MCTS {
         private int winCount;
         private char mainPiece;
         private int playerTurn;
-        private int openSlots;
 
         public void setLayout(Ilayout layout) {
             this.layout = layout;
@@ -78,7 +77,6 @@ class MCTS {
 
             if (father != null) {
                 playerTurn = (father.playerTurn + l.getTurn()) % 2; //Second player is 1
-                openSlots = (father.playerTurn+ l.getTurn());
             } else playerTurn = 0; //First player is 0
         }
 
