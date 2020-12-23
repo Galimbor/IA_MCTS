@@ -16,6 +16,8 @@ public interface Ilayout {
 
     String getStatus();//keeping track of ths game state (Progress, win or loss)
 
+    char getCurrentPlayer();
+
 
 }
 

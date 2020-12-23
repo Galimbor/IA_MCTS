@@ -14,8 +14,7 @@ class MCTS {
 
         private int visitCount;
         private int winCount;
-        private char mainPiece;
-        private int playerTurn;
+
 
         public void setLayout(Ilayout layout) {
             this.layout = layout;
@@ -25,13 +24,6 @@ class MCTS {
             this.father = father;
         }
 
-        public void setMainPiece(char mainPiece) {
-            this.mainPiece = mainPiece;
-        }
-
-        public void setPlayerTurn(int playerTurn) {
-            this.playerTurn = playerTurn;
-        }
 
         public void setWinStatus(int winStatus) {
             this.winStatus = winStatus;
@@ -39,7 +31,7 @@ class MCTS {
 
         private int winStatus;// thils will the in the board
 
-        private List<State> childArray; //This will be holding the state's childs
+        private List<State> childArray = new ArrayList<>();//This will be holding the state's childs
         //We'll need it for several iterations of MCTS
 
         public List<State> getChildArray() {
@@ -50,13 +42,6 @@ class MCTS {
             return layout;
         }
 
-        public char getMainPiece() {
-            return mainPiece;
-        }
-
-        public int getPlayerTurn() {
-            return playerTurn;
-        }
 
         public int getWinStatus() {
             return winStatus;
@@ -73,11 +58,6 @@ class MCTS {
             father = n;
             visitCount = 0;
             winCount = 0;
-            mainPiece = 'X';
-
-            if (father != null) {
-                playerTurn = (father.playerTurn + l.getTurn()) % 2; //Second player is 1
-            } else playerTurn = 0; //First player is 0
         }
 
         public void setChildArray(List<State> childArray) {
@@ -126,9 +106,14 @@ class MCTS {
     }
 
 
+    public void setPlayer(char player) {
+        this.player = player;
+    }
+
     protected Queue<State> abertos;//This might hold the nodes that still need to be seen
     private List<State> fechados; //This might hold the depleted notes(have been completely visited)
     private State actual; // The current node about to me explored?
+    private char player;
 
 
     /**
@@ -154,22 +139,43 @@ class MCTS {
 
 
     //Selection part of MCTS(using UCT)
-    private State selection(State root) {
+    public State selection(State root) {
         State node = root;
         while (node.getChildArray().size() != 0) //It has to have children
         {
-            node = UCT.findBestNodeUsingUCT(node); //We should use an interface for this
+            node = UCT.findBestNodeUsingUCT(node, node.getLayout().getCurrentPlayer(), player); //We should use an interface for this
         }
         return node;
     }
 
 
     //Expansion
-    private void expansion(State node) throws CloneNotSupportedException {
+    public void expansion(State node) throws CloneNotSupportedException {
 
         node.setChildArray(sucessores(node));
         //Need to find a way to say who's playing -- I think it's done ?
         //The state should save that information
+    }
+
+    /**
+     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
+     *
+     * @param n - state that will be used to get its children.
+     * @return list of states.
+     * @throws CloneNotSupportedException
+     * @pre true.
+     * @post list of states that has at least 1 element and a maximum of 4.
+     */
+    final private List<State> remove_sucessores(State n) throws CloneNotSupportedException {
+        List<State> sucs = new ArrayList<>();
+        List<Ilayout> children = n.layout.children();
+        for (Ilayout e : children) {
+            if (n.father == null || !e.equals(n.father.layout)) {
+                State nn = new State(e, null);
+                sucs.add(nn);
+            }
+        }
+        return sucs;
     }
 
 
@@ -180,46 +186,44 @@ class MCTS {
 
         //Node randomly choosen
         State tempNode = node;
+//        if(tempNode.getLayout().getStatus() == "" )
 
-
-        while (tempNode.getLayout().getStatus().equals("in progress"))
+        if(tempNode.getLayout().getStatus().equals("circles win") && player == 'X' || tempNode.getLayout().getStatus().equals("crosses win") && player == '0')
         {
-            System.out.println(tempNode.getLayout());
+            tempNode.father.setVisitCount(Integer.min);
+        }
+
+        while (tempNode.getLayout().getStatus().equals("in progress")) {
             tempNode = RandomUniform.pickRandom(sucessores(tempNode));
             tempNode.father = null;
         }
-        System.out.println(tempNode.getLayout());
-        String status =  tempNode.getLayout().getStatus();
-
-        if((status.equals("circles win") && tempNode.getMainPiece() == '0') || (status.equals("crosses win") && tempNode.getMainPiece() == 'X')) {
+        String status = tempNode.getLayout().getStatus();
+        if ((status.equals("circles win") && player == '0') || (status.equals("crosses win") && player == 'X')) {
             result = 1;
-        } else if(status.equals("draw")) { //do nothing
+        } else if (status.equals("draw")) { //do nothing
         } else {
             result = -1;
         }
-
         return result;
     }
 
 
     //backpropagation
-    private void backpropagate(State node, int result) {
-        int win = 0;
-        if (result == 1) {
-            win = 1; //porra feia
-        }
+    public void backpropagate(State node, int result) {
         while (node.father != null) {
-            node.setWinCount(node.getWinCount() + win);
+            node.setWinCount(node.getWinCount() + result);
             node.setVisitCount(node.getVisitCount() + 1);
+            node = node.father;
         }
+        node.setWinCount(node.getWinCount() + result);
+        node.setVisitCount(node.getVisitCount() + 1);
     }
 
 
     //best_child
     private State bestChild(State root) {
         //Returning the root child who has the most visits
-        return Collections.max(root.getChildArray(), Comparator.comparing(c -> c.getVisitCount()
-        ));
+        return Collections.max(root.getChildArray(), Comparator.comparing(State::getVisitCount));
     }
 
 
@@ -235,8 +239,9 @@ class MCTS {
      */
     final
     public State solve(Ilayout s) throws CloneNotSupportedException {
+        State result;
         long start = System.currentTimeMillis();//Since we'll have two minutes for a game i'm thinking about
-        long end = start + 10000; // 10 seconds
+        long end = start + 15; // 5 seconds
 
         //Root of our tree
         State root = new State(s, null);
@@ -244,16 +249,31 @@ class MCTS {
         while (System.currentTimeMillis() < end) {
             actual = selection(root);
             int simulation_result;
-            if(actual.visitCount != 0)
-            {
+            if (actual.visitCount != 0 && actual.getLayout().getStatus().equals("in progress")) {
                 expansion(actual);
                 simulation_result = simulation(actual.childArray.get(0));
             } else {
                 simulation_result = simulation(actual);
             }
+//            System.out.println("actual is \n" +actual + "and simulation result was " + simulation_result);
             backpropagate(actual, simulation_result);
         }
-        return bestChild(root);
+        for (State node : root.getChildArray()
+        ) {
+            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+            System.out.println(node.getVisitCount());
+            System.out.println(node.getWinCount());
+            System.out.println(node + "with player " + s.getCurrentPlayer() + " playing, has value of " + UCT.computeUCT(1, node.getWinCount(), node.getVisitCount()));
+            System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+        }
+
+        result = bestChild(root);
+//        while (result.getChildArray().size() != 0) //It has to have children
+//        {
+//            System.out.println(result + "player " + result.getLayout().getCurrentPlayer());
+//            result = UCT.findBestNodeUsingUCT(result, result.getLayout().getCurrentPlayer(), player); //We should use an interface for this
+//        }
+        return result;
 
     }
 }

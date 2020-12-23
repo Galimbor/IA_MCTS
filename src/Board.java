@@ -196,8 +196,8 @@ public class Board implements Ilayout, Cloneable {
         List<Ilayout> children = new ArrayList<>();
         char nextPiece;
 
-        if (this.currentPlayer == '0') nextPiece = '0';
-        else nextPiece = 'X';
+        if (this.currentPlayer == 'X') nextPiece = 'X';
+        else nextPiece = '0';
 
         for (int i = 0; i < dim; i++) {
             for (int j = 0; j < dim; j++) {

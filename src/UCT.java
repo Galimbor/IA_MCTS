@@ -7,19 +7,24 @@ public class UCT {
 
 
     public static double computeUCT(int parentVisit, double nodeWinScore, int nodeVisit) {
+        double result = 0;
         if (nodeVisit == 0) {
-            return Double.MAX_VALUE; //Node is unvisited which makes it very valuable
+            result = Double.MAX_VALUE; //Node is unvisited which makes it very valuable
+        } else {
+            double c = Math.sqrt(2); //Random value gotten from the internet
+            result = ((nodeWinScore / (double) nodeVisit) + c * Math.sqrt(Math.log(parentVisit) / (double) nodeVisit));
         }
-        double c = 1.41; //Random value gotten from the internet
-        return (nodeWinScore / (double) nodeVisit) + c * Math.sqrt(Math.log(parentVisit) / (double) nodeVisit);
+        return result;
     }
 
 
-    protected static MCTS.State findBestNodeUsingUCT(MCTS.State node) {
+    protected static MCTS.State findBestNodeUsingUCT(MCTS.State node, char playerTurn, char player) {
+        MCTS.State result;
         int parentVisit = node.getVisitCount();//Total number of visits
-
-        return Collections.max(node.getChildArray(), Comparator.comparing(c -> computeUCT(
+        result = Collections.max(node.getChildArray(), Comparator.comparing(c -> computeUCT(
                 parentVisit, c.getWinCount(), c.getVisitCount())));
+//        System.out.println("player " + playerTurn + " played \n"+ result + "uct = " + computeUCT(parentVisit,result.getWinCount(), result.getVisitCount()));
+        return result;
     }
 
 
