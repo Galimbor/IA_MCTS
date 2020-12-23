@@ -6,10 +6,9 @@ public class Board implements Ilayout, Cloneable {
 
     private static final int dim = 3;
     private char[][] board;
-    private String status;
     private int openSlots = dim * dim;
     private char currentPlayer;
-
+    private static char openingPiece;
 
     /**
      * Constructor where a bidimensional char array is passed as an argument, creating a Board object.
@@ -86,6 +85,14 @@ public class Board implements Ilayout, Cloneable {
     }
 
 
+    public void placeMove(int x, int y,char move) {
+        this.board[x][y] = move;
+        setCurrentPlayer();
+    }
+
+
+
+
     /**
      * The possibility to create a deep copy of the Board.
      *
@@ -131,6 +138,7 @@ public class Board implements Ilayout, Cloneable {
     }
 
 
+
     public char getCurrentPlayer() {
         return currentPlayer;
     }
@@ -171,10 +179,22 @@ public class Board implements Ilayout, Cloneable {
             }
 
         }
-        if (playerXmoves > player0moves) this.currentPlayer = '0';
-        else this.currentPlayer = 'X';
+//        System.out.println(playerXmoves + " xmoves");
+//        System.out.println(player0moves + " 0moves");
+        if (playerXmoves == player0moves) this.currentPlayer = openingPiece;
+        else if (playerXmoves > player0moves)
+        {
+            this.currentPlayer = '0';
+        }
+        else {
+            this.currentPlayer = 'X';
+        }
 
         setOpenSlots(dim * dim - (playerXmoves + player0moves));
+    }
+
+    public void setOpeningPiece(char openingPiece) {
+        openingPiece = openingPiece;
     }
 
 

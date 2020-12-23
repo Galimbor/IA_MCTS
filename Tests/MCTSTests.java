@@ -59,7 +59,7 @@ public class MCTSTests {
     @Test
     public void mctsTest2() throws CloneNotSupportedException {
         MCTS mcts = new MCTS();
-        Board board1 = new Board("X_0", "___", "___");
+        Board board1 = new Board("X0_", "___", "___");
         MCTS.State s0 = new MCTS.State(board1, null);
         mcts.setPlayer('X');
         System.out.println(mcts.solve(s0.getLayout()));
@@ -68,7 +68,7 @@ public class MCTSTests {
     @Test
     public void mctsTest3() throws CloneNotSupportedException {
         MCTS mcts = new MCTS();
-        Board board1 = new Board("X_0", "___", "X__");
+        Board board1 = new Board("X0X", "___", "___");
         mcts.setPlayer('0');
         MCTS.State s0 = new MCTS.State(board1, null);
         System.out.println(mcts.solve(s0.getLayout()));
@@ -86,13 +86,52 @@ public class MCTSTests {
 
 
     @Test
-    public void mctsTest4() throws CloneNotSupportedException {
+    public void mctsTest4_X() throws CloneNotSupportedException {
         MCTS mcts = new MCTS();
         Board board1 = new Board("0X_", "_0_", "_X_");
         mcts.setPlayer('X');
         MCTS.State s0 = new MCTS.State(board1, null);
         System.out.println(mcts.solve(s0.getLayout()));
     }
+
+    @Test
+    public void mctsTest4_0() throws CloneNotSupportedException {
+        MCTS mcts = new MCTS();
+        Board board1 = new Board("X0_", "_X_", "_0_");
+        mcts.setPlayer('0');
+        board1.setOpeningPiece('0');
+        MCTS.State s0 = new MCTS.State(board1, null);
+        System.out.println(mcts.solve(s0.getLayout()));
+    }
+
+    @Test
+    public void mctsTest4_X_1() throws CloneNotSupportedException {
+        MCTS mcts = new MCTS();
+        Board board1 = new Board("0X_", "_0_", "_XX");
+        mcts.setPlayer('0');
+        MCTS.State s0 = new MCTS.State(board1, null);
+        System.out.println(mcts.solve(s0.getLayout()));
+    }
+
+    @Test
+    public void mctsTest4_X_1_1() throws CloneNotSupportedException {
+        MCTS mcts = new MCTS();
+        Board board1 = new Board("0X_", "_0_", "0XX");
+        mcts.setPlayer('X');
+        MCTS.State s0 = new MCTS.State(board1, null);
+        System.out.println(mcts.solve(s0.getLayout()));
+    }
+
+    @Test
+    public void mctsTest4_X_1_1_1() throws CloneNotSupportedException {
+        MCTS mcts = new MCTS();
+        Board board1 = new Board("0XX", "_0_", "0XX");
+        mcts.setPlayer('0');
+        MCTS.State s0 = new MCTS.State(board1, null);
+        System.out.println(mcts.solve(s0.getLayout()));
+    }
+
+
 
     @Test
     public void mctsTest4_1() throws CloneNotSupportedException {

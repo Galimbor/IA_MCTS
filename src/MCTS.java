@@ -188,11 +188,10 @@ class MCTS {
         State tempNode = node;
 //        if(tempNode.getLayout().getStatus() == "" )
 
-        if(tempNode.getLayout().getStatus().equals("circles win") && player == 'X' || tempNode.getLayout().getStatus().equals("crosses win") && player == '0')
-        {
-            tempNode.father.setVisitCount(Integer.min);
+        if (tempNode.getLayout().getStatus().equals("circles win") && player == 'X' || tempNode.getLayout().getStatus().equals("crosses win") && player == '0') {
+            tempNode.father.setWinCount(Integer.MIN_VALUE);
+            return -1;
         }
-
         while (tempNode.getLayout().getStatus().equals("in progress")) {
             tempNode = RandomUniform.pickRandom(sucessores(tempNode));
             tempNode.father = null;
@@ -200,7 +199,7 @@ class MCTS {
         String status = tempNode.getLayout().getStatus();
         if ((status.equals("circles win") && player == '0') || (status.equals("crosses win") && player == 'X')) {
             result = 1;
-        } else if (status.equals("draw")) { //do nothing
+        } else if (status.equals("draw")) {
         } else {
             result = -1;
         }
@@ -210,8 +209,12 @@ class MCTS {
 
     //backpropagation
     public void backpropagate(State node, int result) {
+
+
         while (node.father != null) {
-            node.setWinCount(node.getWinCount() + result);
+            if (node.getLayout().getCurrentPlayer() == player) {
+                node.setWinCount(node.getWinCount() + result);
+            }
             node.setVisitCount(node.getVisitCount() + 1);
             node = node.father;
         }
@@ -241,7 +244,7 @@ class MCTS {
     public State solve(Ilayout s) throws CloneNotSupportedException {
         State result;
         long start = System.currentTimeMillis();//Since we'll have two minutes for a game i'm thinking about
-        long end = start + 15; // 5 seconds
+        long end = start + 3000; // 5 seconds
 
         //Root of our tree
         State root = new State(s, null);
@@ -258,14 +261,14 @@ class MCTS {
 //            System.out.println("actual is \n" +actual + "and simulation result was " + simulation_result);
             backpropagate(actual, simulation_result);
         }
-        for (State node : root.getChildArray()
-        ) {
-            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-            System.out.println(node.getVisitCount());
-            System.out.println(node.getWinCount());
-            System.out.println(node + "with player " + s.getCurrentPlayer() + " playing, has value of " + UCT.computeUCT(1, node.getWinCount(), node.getVisitCount()));
-            System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-        }
+//        for (State node : root.getChildArray()
+//        ) {
+//            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+//            System.out.println(node.getVisitCount());
+//            System.out.println(node.getWinCount());
+//            System.out.println(node + "with player " + s.getCurrentPlayer() + " playing, has value of " + UCT.computeUCT(1, node.getWinCount(), node.getVisitCount()));
+//            System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+//        }
 
         result = bestChild(root);
 //        while (result.getChildArray().size() != 0) //It has to have children
