@@ -17,7 +17,8 @@ public class Main {
             int x = Integer.parseInt(sc.next());
             System.out.println("Enter y coordinates:");
             int y = Integer.parseInt(sc.next());
-            startingboard.placeMove(x,y,openingPiece);
+            Coordinate c = new Coordinate(x,y);
+            startingboard.placeMove(c,openingPiece);
             if(startingboard.getStatus().equals("in progress")) {
                 startingboard = (Board) s.solve(startingboard).getLayout();
             }

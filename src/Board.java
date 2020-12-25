@@ -6,9 +6,10 @@ public class Board implements Ilayout, Cloneable {
 
     private static final int dim = 3;
     private char[][] board;
-    private int openSlots = dim * dim;
     private char currentPlayer;
     private static char openingPiece;
+    private static char CROSS = 'X';
+    private static char CIRCLE = '0';
 
     /**
      * Constructor where a bidimensional char array is passed as an argument, creating a Board object.
@@ -24,6 +25,30 @@ public class Board implements Ilayout, Cloneable {
     public Board() {
         char[][] b = new char[dim][dim];
         this.board = initializeBoard(b);
+    }
+
+    public Board(String board) {
+        char[][] b = new char[dim][dim];
+        int j = 0;
+        int k = 0;
+        while (j < dim && k < dim) {
+            for (int i = 0; i < board.length(); i++) {
+                char letter = board.charAt(i);
+                if (letter == '0' || letter == 'X') {
+                    b[j][k++] = letter;
+                } else if (letter == '|') {
+                } else if (letter == '\n') {
+                    j++;
+                    k = 0;
+                } else {
+                    b[j][k++] = '_';
+                }
+            }
+        }
+        this.board = b;
+
+        setCurrentPlayer();
+
     }
 
 
@@ -85,12 +110,25 @@ public class Board implements Ilayout, Cloneable {
     }
 
 
-    public void placeMove(int x, int y,char move) {
-        this.board[x][y] = move;
-        setCurrentPlayer();
+    @Override
+    public void placeMove(Coordinate c, char move) {
+        this.board[c.getX()][c.getY()] = move;
+        this.setCurrentPlayer();
     }
 
 
+    @Override
+    public List<Coordinate> getEmptyPositions() {
+        int size = this.board.length;
+        List<Coordinate> emptyPositions = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (this.board[i][j] == '_')
+                    emptyPositions.add(new Coordinate(i, j));
+            }
+        }
+        return emptyPositions;
+    }
 
 
     /**
@@ -138,7 +176,6 @@ public class Board implements Ilayout, Cloneable {
     }
 
 
-
     public char getCurrentPlayer() {
         return currentPlayer;
     }
@@ -179,29 +216,21 @@ public class Board implements Ilayout, Cloneable {
             }
 
         }
-//        System.out.println(playerXmoves + " xmoves");
-//        System.out.println(player0moves + " 0moves");
-        if (playerXmoves == player0moves) this.currentPlayer = openingPiece;
-        else if (playerXmoves > player0moves)
-        {
+
+        if (playerXmoves == player0moves)
+            this.currentPlayer = openingPiece;
+        else if (playerXmoves > player0moves) {
             this.currentPlayer = '0';
-        }
-        else {
+        } else {
             this.currentPlayer = 'X';
         }
-
-        setOpenSlots(dim * dim - (playerXmoves + player0moves));
     }
 
     public void setOpeningPiece(char openingPiece) {
-        openingPiece = openingPiece;
+        Board.openingPiece = openingPiece;
+        setCurrentPlayer();
     }
 
-
-    @Override
-    public int getTurn() {
-        return 1; //this is still not great
-    }
 
     /**
      * Missing optimization
@@ -234,13 +263,6 @@ public class Board implements Ilayout, Cloneable {
 
     }
 
-    public int getOpenSlots() {
-        return openSlots;
-    }
-
-    public void setOpenSlots(int openSlots) {
-        this.openSlots = openSlots;
-    }
 
     /**
      * Creates a deepcopy of Board object.
@@ -276,7 +298,7 @@ public class Board implements Ilayout, Cloneable {
 
     private boolean checkDraw() {
         boolean result = false;
-        if (this.getOpenSlots() == 0)
+        if (this.getEmptyPositions().size() == 0)
             result = true;
         return result;
     }

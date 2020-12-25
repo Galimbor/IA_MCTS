@@ -14,7 +14,7 @@ class MCTS {
 
         private int visitCount;
         private int winCount;
-
+        private int player;
 
         public void setLayout(Ilayout layout) {
             this.layout = layout;
@@ -55,6 +55,13 @@ class MCTS {
          */
         public State(Ilayout l, State n) {
             layout = l;
+            father = n;
+            visitCount = 0;
+            winCount = 0;
+        }
+
+        public State(char[][] board, State n) {
+            layout = new Board(board);
             father = n;
             visitCount = 0;
             winCount = 0;
@@ -125,7 +132,7 @@ class MCTS {
      * @pre true.
      * @post list of states that has at least 1 element and a maximum of 4.
      */
-    final private List<State> sucessores(State n) throws CloneNotSupportedException {
+    private List<State> sucessores(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
         List<Ilayout> children = n.layout.children();
         for (Ilayout e : children) {
@@ -137,13 +144,25 @@ class MCTS {
         return sucs;
     }
 
+    public List<State> sucessores_v2(State n) throws CloneNotSupportedException {
+        List<State> sucs = new ArrayList<>();
+        List<Coordinate> availablePositions = n.getLayout().getEmptyPositions();
+        for (Coordinate c : availablePositions) {
+            Board b = new Board(n.getLayout().toString());
+            State nn = new State(b, n);
+            nn.getLayout().placeMove(c, n.getLayout().getCurrentPlayer());
+            sucs.add(nn);
+        }
+        return sucs;
+    }
+
 
     //Selection part of MCTS(using UCT)
     public State selection(State root) {
         State node = root;
         while (node.getChildArray().size() != 0) //It has to have children
         {
-            node = UCT.findBestNodeUsingUCT(node, node.getLayout().getCurrentPlayer(), player); //We should use an interface for this
+            node = UCT.findBestNodeUsingUCT(node);//We should use an interface for this
         }
         return node;
     }
@@ -151,8 +170,7 @@ class MCTS {
 
     //Expansion
     public void expansion(State node) throws CloneNotSupportedException {
-
-        node.setChildArray(sucessores(node));
+        node.setChildArray(sucessores_v2(node));
         //Need to find a way to say who's playing -- I think it's done ?
         //The state should save that information
     }
@@ -186,14 +204,13 @@ class MCTS {
 
         //Node randomly choosen
         State tempNode = node;
-//        if(tempNode.getLayout().getStatus() == "" )
 
         if (tempNode.getLayout().getStatus().equals("circles win") && player == 'X' || tempNode.getLayout().getStatus().equals("crosses win") && player == '0') {
             tempNode.father.setWinCount(Integer.MIN_VALUE);
             return -1;
         }
         while (tempNode.getLayout().getStatus().equals("in progress")) {
-            tempNode = RandomUniform.pickRandom(sucessores(tempNode));
+            tempNode = RandomUniform.pickRandom(sucessores_v2(tempNode));
             tempNode.father = null;
         }
         String status = tempNode.getLayout().getStatus();
@@ -210,15 +227,16 @@ class MCTS {
     //backpropagation
     public void backpropagate(State node, int result) {
 
-
         while (node.father != null) {
-            if (node.getLayout().getCurrentPlayer() == player) {
+            if (node.getLayout().getCurrentPlayer() != player) {
                 node.setWinCount(node.getWinCount() + result);
             }
             node.setVisitCount(node.getVisitCount() + 1);
             node = node.father;
         }
-        node.setWinCount(node.getWinCount() + result);
+        if (node.getLayout().getCurrentPlayer() != player) {
+            node.setWinCount(node.getWinCount() + result);
+        }
         node.setVisitCount(node.getVisitCount() + 1);
     }
 
@@ -244,22 +262,22 @@ class MCTS {
     public State solve(Ilayout s) throws CloneNotSupportedException {
         State result;
         long start = System.currentTimeMillis();//Since we'll have two minutes for a game i'm thinking about
-        long end = start + 3000; // 5 seconds
+        long end = start + 1000; // 5 seconds
 
         //Root of our tree
         State root = new State(s, null);
-
         while (System.currentTimeMillis() < end) {
             actual = selection(root);
             int simulation_result;
-            if (actual.visitCount != 0 && actual.getLayout().getStatus().equals("in progress")) {
+            if (actual.getLayout().getStatus().equals("in progress")) {
                 expansion(actual);
-                simulation_result = simulation(actual.childArray.get(0));
-            } else {
-                simulation_result = simulation(actual);
             }
-//            System.out.println("actual is \n" +actual + "and simulation result was " + simulation_result);
+            if (actual.getChildArray().size() > 0) {
+                actual = RandomUniform.pickRandom(actual.getChildArray());
+            }
+            simulation_result = simulation(actual);
             backpropagate(actual, simulation_result);
+
         }
 //        for (State node : root.getChildArray()
 //        ) {
@@ -270,13 +288,11 @@ class MCTS {
 //            System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
 //        }
 
+
         result = bestChild(root);
-//        while (result.getChildArray().size() != 0) //It has to have children
-//        {
-//            System.out.println(result + "player " + result.getLayout().getCurrentPlayer());
-//            result = UCT.findBestNodeUsingUCT(result, result.getLayout().getCurrentPlayer(), player); //We should use an interface for this
-//        }
         return result;
 
+
     }
+
 }
