@@ -3,26 +3,31 @@ import java.util.List;
 public interface Ilayout {
 
 
-
-
-
     /**
      * @return the children of the receiver.
      */
     List<Ilayout> children() throws CloneNotSupportedException;
 
 
+    /***
+     *
+     * @return the empty positions
+     */
     List<Coordinate> getEmptyPositions();
 
-    /**
-     * @return the cost for moving from the input config to the receiver.
+    /***
+     *
+     * @return the game state (in progress, circles win, crosses win, draw)
      */
+    String getStatus();
 
-    String getStatus();//keeping track of ths game state (Progress, win or loss)
-
+    /***
+     *
+     * @return the player that will make the next move
+     */
     char getCurrentPlayer();
 
-    void placeMove(Coordinate c,char move);
+    boolean placeMove(Coordinate c,char move);
 
 
 }

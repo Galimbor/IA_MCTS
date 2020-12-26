@@ -8,8 +8,6 @@ public class Board implements Ilayout, Cloneable {
     private char[][] board;
     private char currentPlayer;
     private static char openingPiece;
-    private static char CROSS = 'X';
-    private static char CIRCLE = '0';
 
     /**
      * Constructor where a bidimensional char array is passed as an argument, creating a Board object.
@@ -46,9 +44,7 @@ public class Board implements Ilayout, Cloneable {
             }
         }
         this.board = b;
-
         setCurrentPlayer();
-
     }
 
 
@@ -111,9 +107,16 @@ public class Board implements Ilayout, Cloneable {
 
 
     @Override
-    public void placeMove(Coordinate c, char move) {
-        this.board[c.getX()][c.getY()] = move;
-        this.setCurrentPlayer();
+    public boolean placeMove(Coordinate c, char move) {
+        boolean result = false;
+        if (this.board[c.getX()][c.getY()] == '_') {
+            this.board[c.getX()][c.getY()] = move;
+            this.setCurrentPlayer();
+            result = true;
+        } else {
+            System.out.println("Illegal move, selected move is already occupied or it doesn't exists in the board");
+        }
+        return result;
     }
 
 
@@ -129,24 +132,6 @@ public class Board implements Ilayout, Cloneable {
         }
         return emptyPositions;
     }
-
-
-    /**
-     * The possibility to create a deep copy of the Board.
-     *
-     * @return deep copy of this.board.
-     * @throws CloneNotSupportedException
-     */
-//    protected Object clone() throws CloneNotSupportedException {
-//        Board boardCopy = new Board();
-//        boardCopy.board = new int[dim][dim];
-//        for (int i = 0; i < dim; i++) {
-//            for (int j = 0; j < dim; j++) {
-//                boardCopy.board[i][j] = this.board[i][j];
-//            }
-//        }
-//        return boardCopy;
-//    }
 
 
     /**
@@ -214,7 +199,6 @@ public class Board implements Ilayout, Cloneable {
                 else if (this.board[i][j] == '0')
                     player0moves++;
             }
-
         }
         if (playerXmoves == player0moves) {
             this.currentPlayer = openingPiece;
@@ -226,8 +210,14 @@ public class Board implements Ilayout, Cloneable {
     }
 
     public void setOpeningPiece(char openingPiece) {
-        Board.openingPiece = openingPiece;
-        setCurrentPlayer();
+        if(openingPiece == 'X' || openingPiece == '0') {
+            Board.openingPiece = openingPiece;
+            setCurrentPlayer();
+        }
+        else {
+            System.out.println("Wrong piece selected, please select 0 or X");
+            System.exit(0);
+        }
     }
 
 
@@ -238,8 +228,8 @@ public class Board implements Ilayout, Cloneable {
      * @return children of this board.
      * @throws CloneNotSupportedException in case it cannot create a new board to hold the new positions.
      */
-    @Override
-    public List<Ilayout> children() throws CloneNotSupportedException {
+//    @Override
+    public List<Ilayout> children_2() throws CloneNotSupportedException {
 
         List<Ilayout> children = new ArrayList<>();
         char nextPiece;
@@ -259,7 +249,23 @@ public class Board implements Ilayout, Cloneable {
         }
 
         return children;
+    }
 
+    @Override
+    public List<Ilayout> children() {
+        List<Ilayout> children = new ArrayList<>();
+        char nextPiece;
+
+        if (this.currentPlayer == 'X') nextPiece = 'X';
+        else nextPiece = '0';
+
+        List<Coordinate> availablePositions = this.getEmptyPositions();
+        for (Coordinate c : availablePositions) {
+            Board b = new Board(this.toString()); //TODO get rid of new Board()
+            b.placeMove(c, nextPiece);
+            children.add(b);
+        }
+        return children;
     }
 
 

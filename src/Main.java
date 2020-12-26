@@ -9,28 +9,29 @@ public class Main {
         System.out.println("With which piece would you like to start the game? 0 or X?");
         char openingPiece = sc.next().charAt(0);
         startingboard.setOpeningPiece(openingPiece);
-        if(openingPiece == 'X')
-            s.setPlayer('0');
-        else
-        {
-            s.setPlayer('X');
-        }
-        while(startingboard.getStatus().equals("in progress")){
+        while (startingboard.getStatus().equals("in progress")) {
             System.out.println(startingboard);
-            System.out.println("select your move: ");
-            System.out.println("Enter number of row");
-            int row = Integer.parseInt(sc.next());
-            System.out.println("Enter number of column:");
-            int column = Integer.parseInt(sc.next());
-            Coordinate c = new Coordinate(row,column);
-            startingboard.placeMove(c,openingPiece);
+            Coordinate c = selectMove(startingboard, sc);
+            while (!startingboard.placeMove(c, openingPiece)) {
+                c = selectMove(startingboard, sc);
+            }
             System.out.println(startingboard);
             System.out.println("Opponent is choosing its next move, please wait...");
-            if(startingboard.getStatus().equals("in progress")) {
+            if (startingboard.getStatus().equals("in progress")) {
                 startingboard = (Board) s.solve(startingboard).getLayout();
             }
         }
         System.out.println(startingboard);
         System.out.println("Game over: " + startingboard.getStatus());
+    }
+
+
+    private static Coordinate selectMove(Board board, Scanner sc) {
+        System.out.println("select your move: ");
+        System.out.println("Enter number of row");
+        int row = Integer.parseInt(sc.next());
+        System.out.println("Enter number of column:");
+        int column = Integer.parseInt(sc.next());
+        return new Coordinate(row, column);
     }
 }

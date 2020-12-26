@@ -14,7 +14,6 @@ class MCTS {
 
         private int visitCount;
         private int winCount;
-        private int player;
 
         public void setLayout(Ilayout layout) {
             this.layout = layout;
@@ -60,12 +59,6 @@ class MCTS {
             winCount = 0;
         }
 
-        public State(char[][] board, State n) {
-            layout = new Board(board);
-            father = n;
-            visitCount = 0;
-            winCount = 0;
-        }
 
         public void setChildArray(List<State> childArray) {
             this.childArray = childArray;
@@ -123,36 +116,46 @@ class MCTS {
     private char player;
 
 
+//    /**
+//     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
+//     *
+//     * @param n - state that will be used to get its children.
+//     * @return list of states.
+//     * @throws CloneNotSupportedException
+//     * @pre true.
+//     * @post list of states that has at least 1 element and a maximum of 4.
+//     */
+//    private List<State> sucessores(State n) throws CloneNotSupportedException {
+//        List<State> sucs = new ArrayList<>();
+//        List<Ilayout> children = n.layout.children();
+//        for (Ilayout e : children) {
+//            if (n.father == null || !e.equals(n.father.layout)) {
+//                State nn = new State(e, n);
+//                sucs.add(nn);
+//            }
+//        }
+//        return sucs;
+//    }
+
+
     /**
-     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
-     *
-     * @param n - state that will be used to get its children.
-     * @return list of states.
-     * @throws CloneNotSupportedException
-     * @pre true.
-     * @post list of states that has at least 1 element and a maximum of 4.
+     * //     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
+     * //     *
+     * //     * @param n - state that will be used to get its children.
+     * //     * @return list of states.
+     * //     * @throws CloneNotSupportedException
+     * //     * @pre true.
+     * //     * @post list of states that has at least 1 element and a maximum of 4.
+     * //
      */
-    private List<State> sucessores(State n) throws CloneNotSupportedException {
+    public List<State> sucessores(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
         List<Ilayout> children = n.layout.children();
         for (Ilayout e : children) {
-            if (n.father == null || !e.equals(n.father.layout)) {
-                State nn = new State(e, n);
-                sucs.add(nn);
-            }
-        }
-        return sucs;
-    }
-
-
-    public List<State> sucessores_v2(State n) throws CloneNotSupportedException {
-        List<State> sucs = new ArrayList<>();
-        List<Coordinate> availablePositions = n.getLayout().getEmptyPositions();
-        for (Coordinate c : availablePositions) {
-            Board b = new Board(n.getLayout().toString()); //TODO get rid of new Board()
-            State nn = new State(b, n);
-            nn.getLayout().placeMove(c, n.getLayout().getCurrentPlayer());
+//            if (n.father == null || !e.equals(n.father.layout)) {
+            State nn = new State(e, n);
             sucs.add(nn);
+//            }
         }
         return sucs;
     }
@@ -171,52 +174,30 @@ class MCTS {
 
     //Expansion
     public void expansion(State node) throws CloneNotSupportedException {
-        node.setChildArray(sucessores_v2(node));
+        node.setChildArray(sucessores(node));
         //Need to find a way to say who's playing -- I think it's done ?
         //The state should save that information
     }
 
-    /**
-     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
-     *
-     * @param n - state that will be used to get its children.
-     * @return list of states.
-     * @throws CloneNotSupportedException
-     * @pre true.
-     * @post list of states that has at least 1 element and a maximum of 4.
-     */
-    final private List<State> remove_sucessores(State n) throws CloneNotSupportedException {
-        List<State> sucs = new ArrayList<>();
-        List<Ilayout> children = n.layout.children();
-        for (Ilayout e : children) {
-            if (n.father == null || !e.equals(n.father.layout)) {
-                State nn = new State(e, null);
-                sucs.add(nn);
-            }
-        }
-        return sucs;
-    }
-
 
     //Simulation using a rollout policy random uniform
-    public int simulation(State node) throws CloneNotSupportedException {
+    public int simulation(State node) throws CloneNotSupportedException { //TODO rever, nao funciona para outros jogos
         //End result
         int result = 0;
 
         //Node randomly choosen
         State tempNode = node;
-
-        if (tempNode.getLayout().getStatus().equals("circles win") && player == 'X' || tempNode.getLayout().getStatus().equals("crosses win") && player == '0') {
-            node.father.setWinCount(-9999); //TODO doesnt make sense
-//            System.out.println(node.father.getWinCount());
+        String status = tempNode.getLayout().getStatus();
+        if ((status.equals("0") || status.equals("X")) && player != tempNode.getLayout().getCurrentPlayer()) {
+            node.father.setWinCount(-9999); //TODO review this value
+//            System.out.println(node.father.getWzinCount());
 //            System.out.println(node.father + " defeat");
-            return -1;
         }
         while (tempNode.getLayout().getStatus().equals("in progress")) {
-            tempNode = RandomUniform.pickRandom(sucessores_v2(tempNode));
+            tempNode = RandomUniform.pickRandom(sucessores(tempNode));
             tempNode.father = null;
         }
-        String status = tempNode.getLayout().getStatus();
+        status = tempNode.getLayout().getStatus();
         if ((status.equals("circles win") && player == '0') || (status.equals("crosses win") && player == 'X')) {
 //            System.out.println(status + " and player = " + player);
             result = 1;
@@ -265,9 +246,9 @@ class MCTS {
     final
     public State solve(Ilayout s) throws CloneNotSupportedException {
         State result;
+        player = s.getCurrentPlayer();
         long start = System.currentTimeMillis();//Since we'll have two minutes for a game i'm thinking about
-        long end = start + 4000; // 5 seconds
-
+        long end = start + 100; // 5 seconds
         //Root of our tree
         State root = new State(s, null);
         while (System.currentTimeMillis() < end) {
