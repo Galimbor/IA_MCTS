@@ -11,7 +11,7 @@ public class UCT {
         if (nodeVisit == 0) {
             result = Integer.MAX_VALUE; //Node is unvisited which makes it very valuable
         } else {
-            double c = Math.sqrt(2); //Random value gotten from the internet
+            double c = 1.41; //Random value gotten from the internet
             result = ((nodeWinScore / (double) nodeVisit) + c * Math.sqrt(Math.log(parentVisit) / (double) nodeVisit));
         }
         return result;

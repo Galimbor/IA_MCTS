@@ -216,10 +216,9 @@ public class Board implements Ilayout, Cloneable {
             }
 
         }
-
-        if (playerXmoves == player0moves)
+        if (playerXmoves == player0moves) {
             this.currentPlayer = openingPiece;
-        else if (playerXmoves > player0moves) {
+        } else if (playerXmoves > player0moves) {
             this.currentPlayer = '0';
         } else {
             this.currentPlayer = 'X';

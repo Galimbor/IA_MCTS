@@ -184,6 +184,32 @@ public class MCTSTests {
     }
 
 
+    @Test
+    public void mctsTestPorra() throws CloneNotSupportedException {
+        MCTS mcts = new MCTS();
+        Board board1 = new Board("00_", "XX0", "0X_");
+//        board1.setOpeningPiece('0'); //TODO opening piece faz tomar decisao errada
+        mcts.setPlayer('X');
+        MCTS.State s0 = new MCTS.State(board1, null);
+        System.out.println(mcts.solve(s0.getLayout()));
+    }
+
+    @Test
+    public void mctsTestPorra2() throws CloneNotSupportedException {
+        MCTS mcts = new MCTS();
+        Board board1 = new Board(
+                "00_",
+                "X0X",
+                "___");
+        board1.setOpeningPiece('0'); //TODO opening piece faz tomar decisao errada
+        mcts.setPlayer('X'); //TODO se trocar player para 0 da resultado certo
+        MCTS.State s0 = new MCTS.State(board1, null);
+        System.out.println(mcts.solve(s0.getLayout()));
+    }
+
+
+
+
 
 
 }

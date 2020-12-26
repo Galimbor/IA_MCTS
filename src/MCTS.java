@@ -144,11 +144,12 @@ class MCTS {
         return sucs;
     }
 
+
     public List<State> sucessores_v2(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
         List<Coordinate> availablePositions = n.getLayout().getEmptyPositions();
         for (Coordinate c : availablePositions) {
-            Board b = new Board(n.getLayout().toString());
+            Board b = new Board(n.getLayout().toString()); //TODO get rid of new Board()
             State nn = new State(b, n);
             nn.getLayout().placeMove(c, n.getLayout().getCurrentPlayer());
             sucs.add(nn);
@@ -206,7 +207,9 @@ class MCTS {
         State tempNode = node;
 
         if (tempNode.getLayout().getStatus().equals("circles win") && player == 'X' || tempNode.getLayout().getStatus().equals("crosses win") && player == '0') {
-            tempNode.father.setWinCount(Integer.MIN_VALUE);
+            node.father.setWinCount(-9999); //TODO doesnt make sense
+//            System.out.println(node.father.getWinCount());
+//            System.out.println(node.father + " defeat");
             return -1;
         }
         while (tempNode.getLayout().getStatus().equals("in progress")) {
@@ -215,6 +218,7 @@ class MCTS {
         }
         String status = tempNode.getLayout().getStatus();
         if ((status.equals("circles win") && player == '0') || (status.equals("crosses win") && player == 'X')) {
+//            System.out.println(status + " and player = " + player);
             result = 1;
         } else if (status.equals("draw")) {
         } else {
@@ -262,7 +266,7 @@ class MCTS {
     public State solve(Ilayout s) throws CloneNotSupportedException {
         State result;
         long start = System.currentTimeMillis();//Since we'll have two minutes for a game i'm thinking about
-        long end = start + 1000; // 5 seconds
+        long end = start + 4000; // 5 seconds
 
         //Root of our tree
         State root = new State(s, null);
@@ -284,10 +288,9 @@ class MCTS {
 //            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 //            System.out.println(node.getVisitCount());
 //            System.out.println(node.getWinCount());
-//            System.out.println(node + "with player " + s.getCurrentPlayer() + " playing, has value of " + UCT.computeUCT(1, node.getWinCount(), node.getVisitCount()));
+//            System.out.println(node + "with player " + node.getLayout().getCurrentPlayer() + " playing, has value of " + UCT.computeUCT(1, node.getWinCount(), node.getVisitCount()) + " and win count = " + node.getWinCount());
 //            System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
 //        }
-
 
         result = bestChild(root);
         return result;
