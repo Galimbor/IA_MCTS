@@ -18,9 +18,16 @@ public class Main {
         while (startingboard.getStatus().equals("in progress")) {
             System.out.println(startingboard);
             Coordinate c = selectMove(sc);
-            while (!startingboard.placeMove(c, openingPiece)) {
-                c = selectMove(sc);
+            try {
+                startingboard.placeMove(c, openingPiece);
+            } catch (TicTacToeException tttE) {
+                System.out.println(tttE.toString());
+                System.exit(0);
             }
+//            while (!startingboard.placeMove(c, openingPiece)) {
+//                c = selectMove(sc);
+//            }
+
             System.out.println(startingboard);
             System.out.println("Opponent is choosing its next move, please wait...");
             if (startingboard.getStatus().equals("in progress")) {

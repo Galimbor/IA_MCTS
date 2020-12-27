@@ -121,13 +121,14 @@ public class Board implements Cloneable {
         return emptyPositions;
     }
 
-    public boolean placePiece(Coordinate c, char piece) {
+    public boolean placePiece(Coordinate c, char piece) throws BoardException {
         boolean result = false;
         if (isValidCoordinate(c)) {
             this.board[c.getX()][c.getY()] = piece;
             result = true;
         } else {
-            System.out.println("Illegal move, selected position is already occupied or it doesn't exists in the board");
+
+//            System.out.println("Illegal move, selected position is already occupied or it doesn't exists in the board");
             //Board says no
             //violação é feita aqui, não no tictactoe
 //            System.out.println("Illegal move, selected move is already occupied or it doesn't exists in the board");
@@ -135,13 +136,16 @@ public class Board implements Cloneable {
         return result;
     }
 
-    private boolean isValidCoordinate(Coordinate c) {
+    private boolean isValidCoordinate(Coordinate c) throws BoardException {
         boolean result = false;
         int row = c.getX();
         int column = c.getY();
 //        System.out.println("this is row" + row + "and column " + column  );
-        if ((row >= 0 && row < this.getNumberRows()) || (column >= 0 && column < this.getNumberColumns()))
+        if ((row >= 0 && row < this.getNumberRows()) && (column >= 0 && column < this.getNumberColumns()))
             result = true;
+        else {
+            throw new BoardException("Selected position doesn't exist in the board.");
+        }
         return result;
     }
 
@@ -196,11 +200,15 @@ public class Board implements Cloneable {
         return result;
     }
 
-
-    public boolean isPositionAvailable(Coordinate c, char openSlotChar) {
+    //Chaning this function name might be for the best
+    public boolean isPositionAvailable(Coordinate c, char openSlotChar) throws BoardException {
         boolean result = false;
-        if (this.board[c.getX()][c.getY()] == openSlotChar)
-            result = true;
+        if (isValidCoordinate(c)) {
+
+            if (this.board[c.getX()][c.getY()] == openSlotChar)
+                result = true;
+
+        }
         return result;
     }
 

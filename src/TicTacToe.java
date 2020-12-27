@@ -61,7 +61,7 @@ public class TicTacToe implements Ilayout, Cloneable {
      * @throws IllegalStateException in case the Java application is not in an appropriate state for the requested
      *                               operation.
      */
-    public TicTacToe(String row1, String row2, String row3) throws IllegalStateException {
+    public TicTacToe(String row1, String row2, String row3) throws IllegalStateException, TicTacToeException {
 
         //Split each argument into characters
         String[] row1Splitted = row1.split("");
@@ -70,7 +70,7 @@ public class TicTacToe implements Ilayout, Cloneable {
 
         //Throw exception in case the board is incomplete
         if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim) {
-            throw new IllegalStateException("Invalid arg in TicTacToe constructor");
+            throw new TicTacToeException("Invalid arg in TicTacToe constructor");
         }
 
         this.board = new Board(dim, row1Splitted, row2Splitted, row3Splitted);
@@ -147,13 +147,13 @@ public class TicTacToe implements Ilayout, Cloneable {
         }
     }
 
-    public void setOpeningPiece(char openingPiece) {
+    public void setOpeningPiece(char openingPiece) throws TicTacToeException {
         if (openingPiece == 'X' || openingPiece == '0') {
             TicTacToe.openingPiece = openingPiece;
             setCurrentPlayer();
         } else {
-            System.out.println("Wrong piece selected, please select 0 or X");
-            System.exit(0);
+            throw new TicTacToeException("Wrong piece selected, select either 0 or X.");
+
         }
     }
 
@@ -176,7 +176,12 @@ public class TicTacToe implements Ilayout, Cloneable {
         List<Coordinate> availablePositions = this.getEmptyPositions();
         for (Coordinate c : availablePositions) {
             TicTacToe b = (TicTacToe) this.clone();
-            b.placeMove(c, nextPiece);
+            try {
+                b.placeMove(c, nextPiece);
+            } catch (TicTacToeException e) {
+                System.out.println(e.toString());
+                System.exit(0);
+            }
             children.add(b);
 
 
@@ -211,7 +216,11 @@ public class TicTacToe implements Ilayout, Cloneable {
 
 
         ticTacToeCopy.setCurrentPlayer();
-        ticTacToeCopy.setOpeningPiece(this.getOpeningPiece());
+        try {
+            ticTacToeCopy.setOpeningPiece(this.getOpeningPiece());
+        } catch (TicTacToeException e) {
+            System.out.println(e.toString());
+        }
 
         return ticTacToeCopy;
     }
@@ -309,16 +318,25 @@ public class TicTacToe implements Ilayout, Cloneable {
         return result;
     }
 
-    public boolean placeMove(Coordinate c, char piece) {
+    public boolean placeMove(Coordinate c, char piece) throws TicTacToeException {
         boolean result = false;
-        if (this.getBoard().isPositionAvailable(c, '_')) {
-            this.getBoard().placePiece(c, piece);
-            this.setCurrentPlayer();
-            result = true;
+        try {
+            if (this.getBoard().isPositionAvailable(c, '_')) {
+
+                this.getBoard().placePiece(c, piece);
+
+                this.setCurrentPlayer();
+                result = true;
+            } else {
+
+                throw new TicTacToeException("The selected position is already occupied.");
+
+            }
+        } catch (BoardException e) {
+            System.out.println(e.toString());
+            System.exit(0);
         }
-        {
-            //POSITIOn is not available
-        }
+
         return result;
     }
 
