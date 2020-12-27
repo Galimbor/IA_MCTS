@@ -106,13 +106,19 @@ class MCTS {
     }
 
 
-    protected Queue<State> abertos;//This might hold the nodes that still need to be seen
-    private List<State> fechados; //This might hold the depleted notes(have been completely visited)
     private State actual; // The current node about to me explored?
     private char player;
+    private ITreePolicy treePolicy;
+    private IRolloutPolicy rolloutPolicy;
 
 
-//    /**
+    //Constructor using interfaces
+    public MCTS(ITreePolicy treePolicy, IRolloutPolicy rolloutPolicy) {
+        this.treePolicy = treePolicy;
+        this.rolloutPolicy = rolloutPolicy;
+    }
+
+    //    /**
 //     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
 //     *
 //     * @param n - state that will be used to get its children.
@@ -160,7 +166,7 @@ class MCTS {
         State node = root;
         while (node.getChildArray().size() != 0) //It has to have children
         {
-            node = UCT.findBestNodeUsingUCT(node, player);//We should use an interface for this
+            node = this.treePolicy.select(node);//We should use an interface for this
         }
         return node;
     }
@@ -188,7 +194,10 @@ class MCTS {
 //            System.out.println(node.father + " defeat");
         }
         while (tempNode.getLayout().getStatus().equals("in progress")) {
-            tempNode = RandomUniform.pickRandom(sucessores(tempNode));
+//            One of the big reasons i'll be creating separate interfaces has to do with this..
+//            Random uniform receives List<State> instead of a State. I can't set their childArray otherwise it
+//            will stay saved in memory..
+            tempNode = this.rolloutPolicy.select(sucessores(tempNode));
             tempNode.father = null;
         }
         status = tempNode.getLayout().getStatus();

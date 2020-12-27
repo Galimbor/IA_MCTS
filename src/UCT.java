@@ -1,7 +1,7 @@
 import java.util.Collections;
 import java.util.Comparator;
 
-public class UCT {
+public class UCT implements ITreePolicy {
 
     //Tree policy uct ( requires interface)
 
@@ -18,7 +18,7 @@ public class UCT {
     }
 
 
-    protected static MCTS.State findBestNodeUsingUCT(MCTS.State node, char player) {
+    protected static MCTS.State findBestNodeUsingUCT(MCTS.State node) {
         MCTS.State result;
         int parentVisit = node.getVisitCount();//Total number of visits
         result = Collections.max(node.getChildArray(), Comparator.comparing(c -> computeUCT(
@@ -26,4 +26,8 @@ public class UCT {
         return result;
     }
 
+    @Override
+    public MCTS.State select(MCTS.State node) {
+        return findBestNodeUsingUCT(node);
+    }
 }

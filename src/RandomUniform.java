@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.Random;
 
-public class RandomUniform {
+public class RandomUniform implements IRolloutPolicy {
 
     //Rollout policy RandomUniform(Requires interface)
 
@@ -13,4 +13,8 @@ public class RandomUniform {
     }
 
 
+    @Override
+    public MCTS.State select(List<MCTS.State> nodes) {
+        return pickRandom(nodes);
+    }
 }

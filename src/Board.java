@@ -2,170 +2,151 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Board implements Ilayout, Cloneable {
+public class Board implements Cloneable {
 
-    private static final int dim = 3;
+    private int numberRows;
+    private int numberColumns;
     private char[][] board;
-    private char currentPlayer;
-    private static char openingPiece;
+
+
+    /**
+     * Constructor without any argument. It creates the board array as an empty array.
+     */
+    public Board(int dimension, char filler) {
+
+        this.numberRows = dimension;
+        this.numberColumns = dimension;
+
+        char[][] b = new char[this.numberRows][this.numberColumns];
+
+        this.board = b;
+
+        fillBoardWithChar(filler);
+    }
+
+    /**
+     * Create a new board given the rows of the game
+     *
+     * @param row1Splitted First row of tic tac toe game
+     * @param row2Splitted First row of tic tac toe game
+     * @param row3Splitted First row of tic tac toe game
+     * @throws IllegalStateException in case the Java application is not in an appropriate state for the requested
+     *                               operation.
+     */
+    public Board(int dimension, String[] row1Splitted, String[] row2Splitted, String[] row3Splitted) throws IllegalStateException {
+
+
+        this.numberRows = dimension;
+        this.numberColumns = dimension;
+
+        //New board
+        board = new char[this.numberRows][this.numberColumns];
+        int result = 0;
+        //Fill the first row
+        for (int i = result; i < this.numberColumns; i++) {
+            board[0][i] = row1Splitted[i].charAt(0);
+        }
+        //Fill the second row
+        for (int i = result; i < this.numberColumns; i++) {
+            board[1][i] = row2Splitted[i].charAt(0);
+        }
+        //Fill the third row
+        for (int i = result; i < this.numberColumns; i++) {
+            board[2][i] = row3Splitted[i].charAt(0);
+        }
+
+    }
 
     /**
      * Constructor where a bidimensional char array is passed as an argument, creating a Board object.
      */
     public Board(char[][] board) {
+        this.numberRows = board.length;
+        this.numberColumns = board[0].length;
         this.board = board;
-        setCurrentPlayer();
     }
 
-    /**
-     * Constructor without any argument. It creates the board array as an empty array.
-     */
-    public Board() {
-        char[][] b = new char[dim][dim];
-        this.board = initializeBoard(b);
+
+    public int getNumberRows() {
+        return numberRows;
     }
 
-    public Board(String board) {
-        char[][] b = new char[dim][dim];
-        int j = 0;
-        int k = 0;
-        while (j < dim && k < dim) {
-            for (int i = 0; i < board.length(); i++) {
-                char letter = board.charAt(i);
-                if (letter == '0' || letter == 'X') {
-                    b[j][k++] = letter;
-                } else if (letter == '|') {
-                } else if (letter == '\n') {
-                    j++;
-                    k = 0;
-                } else {
-                    b[j][k++] = '_';
-                }
-            }
+    public void setNumberRows(int numberRows) {
+        if (numberRows >= 0)
+            this.numberRows = numberRows;
+        else {
+            //throw exception
         }
-        this.board = b;
-        setCurrentPlayer();
     }
 
+    public int getNumberColumns() {
+        return numberColumns;
+    }
 
-    /**
-     * Initialize a new board without any values.
-     */
-    public char[][] initializeBoard(char[][] b) {
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-                b[i][j] = '_';
-            }
+    public void setNumberColumns(int numberColumns) {
+        if (numberColumns >= 0)
+            this.numberColumns = numberColumns;
+        else {
+            //throw exception
         }
-        return b;
     }
 
     public char[][] getBoard() {
         return board;
     }
 
+    public void setBoard(char[][] board) {
+        this.board = board;
+    }
 
-    /**
-     * Create a new board given the rows of the game
-     *
-     * @param row1 First row of tic tac toe game
-     * @param row2 First row of tic tac toe game
-     * @param row3 First row of tic tac toe game
-     * @throws IllegalStateException in case the Java application is not in an appropriate state for the requested
-     *                               operation.
-     */
-    public Board(String row1, String row2, String row3) throws IllegalStateException {
-        //Split each argument into characters
-        String[] row1Splitted = row1.split("");
-        String[] row2Splitted = row2.split("");
-        String[] row3Splitted = row3.split("");
-
-        //Throw exception in case the board is incomplete
-        if (row1Splitted.length != dim || row2Splitted.length != dim || row3Splitted.length != dim) {
-            throw new IllegalStateException("Invalid arg in Board constructor");
+    //Responsability of Tictactoe
+    public void fillBoardWithChar(char filler) {
+        for (int i = 0; i < this.numberRows; i++) {
+            for (int j = 0; j < this.numberColumns; j++) {
+                this.board[i][j] = filler;
+            }
         }
-
-        //New board
-        board = new char[dim][dim];
-        int result = 0;
-        //Fill the first row
-        for (int i = result; i < dim; i++) {
-            board[0][i] = row1Splitted[i].charAt(0);
-        }
-        //Fill the second row
-        for (int i = result; i < dim; i++) {
-            board[1][i] = row2Splitted[i].charAt(0);
-        }
-        //Fill the third row
-        for (int i = result; i < dim; i++) {
-            board[2][i] = row3Splitted[i].charAt(0);
-        }
-
-        //Set current player
-        setCurrentPlayer();
     }
 
 
-    public boolean placeMove(Coordinate c, char move) {
-        boolean result = false;
-        if (this.board[c.getX()][c.getY()] == '_') {
-            this.board[c.getX()][c.getY()] = move;
-            this.setCurrentPlayer();
-            result = true;
-        } else {
-            System.out.println("Illegal move, selected move is already occupied or it doesn't exists in the board");
-        }
-        return result;
-    }
-
-
-    @Override
-    public List<Coordinate> getEmptyPositions() {
+    public List<Coordinate> getCharPositions(char piece) {
         int size = this.board.length;
         List<Coordinate> emptyPositions = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (this.board[i][j] == '_')
+                if (this.board[i][j] == piece)
                     emptyPositions.add(new Coordinate(i, j));
             }
         }
         return emptyPositions;
     }
 
-
-    /**
-     * String representation of the tic tac toe board. Where "_" indicates a blank space.
-     *
-     * @return String
-     */
-    public String toString() {
-        String result = "";
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-                if (j == dim - 1)
-                    result = result.concat(String.valueOf(board[i][j]));
-                else
-                    result = result.concat(String.valueOf(board[i][j])) + "|";
-            }
-            result = result.concat("\n");
+    public boolean placePiece(Coordinate c, char piece) {
+        boolean result = false;
+        if (isValidCoordinate(c)) {
+            this.board[c.getX()][c.getY()] = piece;
+            result = true;
+        } else {
+            System.out.println("Illegal move, selected position is already occupied or it doesn't exists in the board");
+            //Board says no
+            //violação é feita aqui, não no tictactoe
+//            System.out.println("Illegal move, selected move is already occupied or it doesn't exists in the board");
         }
-
         return result;
     }
 
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(board);
-    }
-
-
-    public char getCurrentPlayer() {
-        return currentPlayer;
+    private boolean isValidCoordinate(Coordinate c) {
+        boolean result = false;
+        int row = c.getX();
+        int column = c.getY();
+//        System.out.println("this is row" + row + "and column " + column  );
+        if ((row >= 0 && row < this.getNumberRows()) || (column >= 0 && column < this.getNumberColumns()))
+            result = true;
+        return result;
     }
 
     /**
-     * Verifies if an object is a Board and if so, then verifies if two Board objects are equal,
+     * Verifies if an object is a TicTacToe and if so, then verifies if two TicTacToe objects are equal,
      * that's if all their positions hold the same values.
      *
      * @param o other object to be compared
@@ -176,204 +157,49 @@ public class Board implements Ilayout, Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Board board = (Board) o;
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-                if (board.board[i][j] != this.board[i][j])
+        for (int i = 0; i < this.getNumberRows(); i++) {
+            for (int j = 0; j < this.getNumberColumns(); j++) {
+                if (board.getBoard()[i][j] != this.getBoard()[i][j])
                     return false;
             }
         }
         return true;
     }
 
-    /**
-     * Determines who's the next player to make a move, according to the current Board, and sets the object variable.
-     */
-    private void setCurrentPlayer() {
-        int playerXmoves = 0;
-        int player0moves = 0;
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-                if (this.board[i][j] == 'X')
-                    playerXmoves++;
-                else if (this.board[i][j] == '0')
-                    player0moves++;
-            }
-        }
-        if (playerXmoves == player0moves) {
-            this.currentPlayer = openingPiece;
-        } else if (playerXmoves > player0moves) {
-            this.currentPlayer = '0';
-        } else {
-            this.currentPlayer = 'X';
-        }
-    }
-
-    public void setOpeningPiece(char openingPiece) {
-        if(openingPiece == 'X' || openingPiece == '0') {
-            Board.openingPiece = openingPiece;
-            setCurrentPlayer();
-        }
-        else {
-            System.out.println("Wrong piece selected, please select 0 or X");
-            System.exit(0);
-        }
-    }
-
-
-    /**
-     * Missing optimization
-     * Computes a List containing the boards with all the possible moves for the current player.
-     *
-     * @return children of this board.
-     * @throws CloneNotSupportedException in case it cannot create a new board to hold the new positions.
-     */
-//    @Override
-    public List<Ilayout> children_2() throws CloneNotSupportedException {
-
-        List<Ilayout> children = new ArrayList<>();
-        char nextPiece;
-
-        if (this.currentPlayer == 'X') nextPiece = 'X';
-        else nextPiece = '0';
-
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
-                if (this.board[i][j] == '_') {
-                    Board boardCopy = (Board) this.clone();
-                    boardCopy.board[i][j] = nextPiece;
-                    boardCopy.setCurrentPlayer();
-                    children.add(boardCopy);
-                }
-            }
-        }
-
-        return children;
-    }
-
-    @Override
-    public List<Ilayout> children() throws CloneNotSupportedException {
-        List<Ilayout> children = new ArrayList<>();
-        char nextPiece;
-
-        if (this.currentPlayer == 'X') nextPiece = 'X';
-        else nextPiece = '0';
-
-        List<Coordinate> availablePositions = this.getEmptyPositions();
-        for (Coordinate c : availablePositions) {
-            Board b = (Board) this.clone();
-            b.placeMove(c, nextPiece);
-            children.add(b);
-        }
-        return children;
-    }
-
-
-    /**
-     * Creates a deepcopy of Board object.
-     *
-     * @return deep copy of this.board.
-     * @throws CloneNotSupportedException
-     */
     protected Object clone() throws CloneNotSupportedException {
         Board boardCopy = (Board) super.clone();
-        boardCopy.board = new char[dim][dim];
-        for (int i = 0; i < dim; i++) {
-            for (int j = 0; j < dim; j++) {
+        boardCopy.board = new char[this.numberRows][this.getNumberColumns()];
+        boardCopy.setNumberColumns(this.getNumberColumns());
+        boardCopy.setNumberRows(this.getNumberRows());
+        for (int i = 0; i < this.numberRows; i++) {
+            for (int j = 0; j < this.numberColumns; j++) {
                 boardCopy.board[i][j] = this.board[i][j];
             }
         }
+
         return boardCopy;
     }
 
-
     @Override
-    public String getStatus() {
-        String result = "in progress";
-        if (checkCircles()) {
-            result = "0";
-        } else if (checkCrosses()) {
-            result = "X";
-        } else if (checkDraw()) {
-            result = "draw";
-        }
-        return result;
-    }
-
-
-    private boolean checkDraw() {
-        boolean result = false;
-        if (this.getEmptyPositions().size() == 0)
-            result = true;
-        return result;
-    }
-
-    public boolean checkRows(char piece) {
-        boolean result = false;
-        for (int i = 0; i < dim; i++) {
-            int j = 0;
-            int counter = 0;
-            while (j < dim && this.board[i][j] == piece) {
-                counter++;
-                j++;
-                if (counter == 3)
-                    result = true;
+    public String toString() {
+        String result = "";
+        for (int i = 0; i < this.numberRows; i++) {
+            for (int j = 0; j < this.numberColumns; j++) {
+                if (j == this.numberColumns - 1)
+                    result = result.concat(String.valueOf(this.board[i][j]));
+                else
+                    result = result.concat(String.valueOf(this.board[i][j])) + "|";
             }
-        }
-        return result;
-    }
-
-    public boolean checkColumns(char piece) {
-        boolean result = false;
-        for (int j = 0; j < dim; j++) {
-            int i = 0;
-            int counter = 0;
-            while (i < dim && this.board[i][j] == piece) {
-                counter++;
-                i++;
-                if (counter == 3)
-                    result = true;
-            }
-        }
-        return result;
-    }
-
-
-    public boolean checkDiags(char piece) {
-        boolean result = false;
-        int j = 0;
-        int counter = 0;
-        while (j < dim && this.board[j][j] == piece) {
-            counter++;
-            j++;
-            if (counter == 3)
-                result = true;
-        }
-        j = 0;
-        int i = dim - 1;
-        counter = 0;
-        while (j < dim && i >= 0 && this.board[i][j] == piece) {
-            counter++;
-            j++;
-            i--;
-            if (counter == 3)
-                result = true;
+            result = result.concat("\n");
         }
 
         return result;
     }
 
-    private boolean checkCircles() {
-        boolean result = false;
-        char piece = '0';
-        if (checkRows(piece) || checkDiags(piece) || checkColumns(piece))
-            result = true;
-        return result;
-    }
 
-    private boolean checkCrosses() {
+    public boolean isPositionAvailable(Coordinate c, char openSlotChar) {
         boolean result = false;
-        char piece = 'X';
-        if (checkRows(piece) || checkDiags(piece) || checkColumns(piece))
+        if (this.board[c.getX()][c.getY()] == openSlotChar)
             result = true;
         return result;
     }
