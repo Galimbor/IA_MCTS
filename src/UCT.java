@@ -18,13 +18,12 @@ public class UCT {
     }
 
 
-    protected static MCTS.State findBestNodeUsingUCT(MCTS.State node) {
+    protected static MCTS.State findBestNodeUsingUCT(MCTS.State node, char player) {
         MCTS.State result;
         int parentVisit = node.getVisitCount();//Total number of visits
         result = Collections.max(node.getChildArray(), Comparator.comparing(c -> computeUCT(
                 parentVisit, c.getWinCount(), c.getVisitCount())));
         return result;
     }
-
 
 }

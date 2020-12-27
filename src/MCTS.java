@@ -106,10 +106,6 @@ class MCTS {
     }
 
 
-    public void setPlayer(char player) {
-        this.player = player;
-    }
-
     protected Queue<State> abertos;//This might hold the nodes that still need to be seen
     private List<State> fechados; //This might hold the depleted notes(have been completely visited)
     private State actual; // The current node about to me explored?
@@ -152,10 +148,8 @@ class MCTS {
         List<State> sucs = new ArrayList<>();
         List<Ilayout> children = n.layout.children();
         for (Ilayout e : children) {
-//            if (n.father == null || !e.equals(n.father.layout)) {
             State nn = new State(e, n);
             sucs.add(nn);
-//            }
         }
         return sucs;
     }
@@ -166,7 +160,7 @@ class MCTS {
         State node = root;
         while (node.getChildArray().size() != 0) //It has to have children
         {
-            node = UCT.findBestNodeUsingUCT(node);//We should use an interface for this
+            node = UCT.findBestNodeUsingUCT(node, player);//We should use an interface for this
         }
         return node;
     }
@@ -188,9 +182,9 @@ class MCTS {
         //Node randomly choosen
         State tempNode = node;
         String status = tempNode.getLayout().getStatus();
-        if ((status.equals("0") || status.equals("X")) && player != tempNode.getLayout().getCurrentPlayer()) {
+        if ((status.equals("X") || status.equals("0")) && player == tempNode.getLayout().getCurrentPlayer()) {
             node.father.setWinCount(-9999); //TODO review this value
-//            System.out.println(node.father.getWzinCount());
+//            System.out.println(node.father.getWinCount());
 //            System.out.println(node.father + " defeat");
         }
         while (tempNode.getLayout().getStatus().equals("in progress")) {
@@ -198,10 +192,11 @@ class MCTS {
             tempNode.father = null;
         }
         status = tempNode.getLayout().getStatus();
-        if ((status.equals("circles win") && player == '0') || (status.equals("crosses win") && player == 'X')) {
+        if (status.equals(String.valueOf(player))) {
 //            System.out.println(status + " and player = " + player);
             result = 1;
         } else if (status.equals("draw")) {
+            //do nothing
         } else {
             result = -1;
         }

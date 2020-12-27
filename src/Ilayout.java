@@ -27,8 +27,6 @@ public interface Ilayout {
      */
     char getCurrentPlayer();
 
-    boolean placeMove(Coordinate c,char move);
-
 
 }
 

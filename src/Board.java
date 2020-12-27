@@ -106,7 +106,6 @@ public class Board implements Ilayout, Cloneable {
     }
 
 
-    @Override
     public boolean placeMove(Coordinate c, char move) {
         boolean result = false;
         if (this.board[c.getX()][c.getY()] == '_') {
@@ -252,7 +251,7 @@ public class Board implements Ilayout, Cloneable {
     }
 
     @Override
-    public List<Ilayout> children() {
+    public List<Ilayout> children() throws CloneNotSupportedException {
         List<Ilayout> children = new ArrayList<>();
         char nextPiece;
 
@@ -261,7 +260,7 @@ public class Board implements Ilayout, Cloneable {
 
         List<Coordinate> availablePositions = this.getEmptyPositions();
         for (Coordinate c : availablePositions) {
-            Board b = new Board(this.toString()); //TODO get rid of new Board()
+            Board b = (Board) this.clone();
             b.placeMove(c, nextPiece);
             children.add(b);
         }
@@ -291,9 +290,9 @@ public class Board implements Ilayout, Cloneable {
     public String getStatus() {
         String result = "in progress";
         if (checkCircles()) {
-            result = "circles win";
+            result = "0";
         } else if (checkCrosses()) {
-            result = "crosses win";
+            result = "X";
         } else if (checkDraw()) {
             result = "draw";
         }
