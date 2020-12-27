@@ -1,12 +1,12 @@
 import java.util.List;
 
-public interface Ilayout {
+public interface IGame {
 
 
     /**
      * @return the children of the receiver.
      */
-    List<Ilayout> children() throws CloneNotSupportedException;
+    List<IGame> children() throws CloneNotSupportedException;
 
 
     /***

@@ -1,4 +1,7 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 class MCTS {
     /**
@@ -9,14 +12,13 @@ class MCTS {
      */
     static class State {
 
-        private Ilayout layout;
+        private IGame game;
         private State father;
-
         private int visitCount;
         private int winCount;
 
-        public void setLayout(Ilayout layout) {
-            this.layout = layout;
+        public void setGame(IGame game) {
+            this.game = game;
         }
 
         public void setFather(State father) {
@@ -37,8 +39,8 @@ class MCTS {
             return childArray;
         }
 
-        public Ilayout getLayout() {
-            return layout;
+        public IGame getGame() {
+            return game;
         }
 
 
@@ -52,8 +54,8 @@ class MCTS {
          * @param l - instance of a class that implements the Ilayout interface
          * @param n - state that represents the father or null if it doesnt have any.
          */
-        public State(Ilayout l, State n) {
-            layout = l;
+        public State(IGame l, State n) {
+            game = l;
             father = n;
             visitCount = 0;
             winCount = 0;
@@ -86,7 +88,7 @@ class MCTS {
          * @return string
          */
         public String toString() {
-            return layout.toString();
+            return game.toString();
         }
 
 
@@ -101,15 +103,14 @@ class MCTS {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             State state = (State) o;
-            return layout.equals(state.layout);
+            return game.equals(state.game);
         }
     }
 
 
-    private State actual; // The current node about to me explored?
-    private char player;
-    private ITreePolicy treePolicy;
-    private IRolloutPolicy rolloutPolicy;
+    private char iAPlayer;
+    private final ITreePolicy treePolicy;
+    private final IRolloutPolicy rolloutPolicy;
 
 
     //Constructor using interfaces
@@ -118,26 +119,6 @@ class MCTS {
         this.rolloutPolicy = rolloutPolicy;
     }
 
-    //    /**
-//     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
-//     *
-//     * @param n - state that will be used to get its children.
-//     * @return list of states.
-//     * @throws CloneNotSupportedException
-//     * @pre true.
-//     * @post list of states that has at least 1 element and a maximum of 4.
-//     */
-//    private List<State> sucessores(State n) throws CloneNotSupportedException {
-//        List<State> sucs = new ArrayList<>();
-//        List<Ilayout> children = n.layout.children();
-//        for (Ilayout e : children) {
-//            if (n.father == null || !e.equals(n.father.layout)) {
-//                State nn = new State(e, n);
-//                sucs.add(nn);
-//            }
-//        }
-//        return sucs;
-//    }
 
 
     /**
@@ -152,8 +133,8 @@ class MCTS {
      */
     public List<State> sucessores(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
-        List<Ilayout> children = n.layout.children();
-        for (Ilayout e : children) {
+        List<IGame> children = n.game.children();
+        for (IGame e : children) {
             State nn = new State(e, n);
             sucs.add(nn);
         }
@@ -187,21 +168,21 @@ class MCTS {
 
         //Node randomly choosen
         State tempNode = node;
-        String status = tempNode.getLayout().getStatus();
-        if ((status.equals("X") || status.equals("0")) && player == tempNode.getLayout().getCurrentPlayer()) {
+        String status = tempNode.getGame().getStatus();
+        if ((status.equals("X") || status.equals("0")) && iAPlayer == tempNode.getGame().getCurrentPlayer()) {
             node.father.setWinCount(-9999); //TODO review this value
 //            System.out.println(node.father.getWinCount());
 //            System.out.println(node.father + " defeat");
         }
-        while (tempNode.getLayout().getStatus().equals("in progress")) {
+        while (tempNode.getGame().getStatus().equals("in progress")) {
 //            One of the big reasons i'll be creating separate interfaces has to do with this..
 //            Random uniform receives List<State> instead of a State. I can't set their childArray otherwise it
 //            will stay saved in memory..
             tempNode = this.rolloutPolicy.select(sucessores(tempNode));
             tempNode.father = null;
         }
-        status = tempNode.getLayout().getStatus();
-        if (status.equals(String.valueOf(player))) {
+        status = tempNode.getGame().getStatus();
+        if (status.equals(String.valueOf(iAPlayer))) {
 //            System.out.println(status + " and player = " + player);
             result = 1;
         } else if (status.equals("draw")) {
@@ -217,13 +198,13 @@ class MCTS {
     public void backpropagate(State node, int result) {
 
         while (node.father != null) {
-            if (node.getLayout().getCurrentPlayer() != player) {
+            if (node.getGame().getCurrentPlayer() != iAPlayer) {
                 node.setWinCount(node.getWinCount() + result);
             }
             node.setVisitCount(node.getVisitCount() + 1);
             node = node.father;
         }
-        if (node.getLayout().getCurrentPlayer() != player) {
+        if (node.getGame().getCurrentPlayer() != iAPlayer) {
             node.setWinCount(node.getWinCount() + result);
         }
         node.setVisitCount(node.getVisitCount() + 1);
@@ -248,17 +229,18 @@ class MCTS {
      * @post if no exception has been thrown it should solve the problem and an iterator or null will be returned.
      */
     final
-    public State solve(Ilayout s) throws CloneNotSupportedException {
+    public State solve(IGame s) throws CloneNotSupportedException {
         State result;
-        player = s.getCurrentPlayer();
+        iAPlayer = s.getCurrentPlayer();
         long start = System.currentTimeMillis();//Since we'll have two minutes for a game i'm thinking about
-        long end = start + 100; // 5 seconds
+        long end = start + 1000; // 5 seconds
         //Root of our tree
         State root = new State(s, null);
         while (System.currentTimeMillis() < end) {
-            actual = selection(root);
+            // The current node about to me explored?
+            State actual = selection(root);
             int simulation_result;
-            if (actual.getLayout().getStatus().equals("in progress")) {
+            if (actual.getGame().getStatus().equals("in progress")) {
                 expansion(actual);
             }
             if (actual.getChildArray().size() > 0) {

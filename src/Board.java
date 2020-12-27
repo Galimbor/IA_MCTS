@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Board implements Cloneable {
@@ -17,9 +16,7 @@ public class Board implements Cloneable {
         this.numberRows = dimension;
         this.numberColumns = dimension;
 
-        char[][] b = new char[this.numberRows][this.numberColumns];
-
-        this.board = b;
+        this.board = new char[this.numberRows][this.numberColumns];
 
         fillBoardWithChar(filler);
     }
@@ -121,11 +118,9 @@ public class Board implements Cloneable {
         return emptyPositions;
     }
 
-    public boolean placePiece(Coordinate c, char piece) throws BoardException {
-        boolean result = false;
+    public void placePiece(Coordinate c, char piece) throws BoardException {
         if (isValidCoordinate(c)) {
             this.board[c.getX()][c.getY()] = piece;
-            result = true;
         } else {
 
 //            System.out.println("Illegal move, selected position is already occupied or it doesn't exists in the board");
@@ -133,7 +128,6 @@ public class Board implements Cloneable {
             //violação é feita aqui, não no tictactoe
 //            System.out.println("Illegal move, selected move is already occupied or it doesn't exists in the board");
         }
-        return result;
     }
 
     private boolean isValidCoordinate(Coordinate c) throws BoardException {
@@ -146,6 +140,14 @@ public class Board implements Cloneable {
         else {
             throw new BoardException("Selected position doesn't exist in the board.");
         }
+        return result;
+    }
+
+    //Chaning this function name might be for the best
+    public boolean isPositionAvailable(Coordinate c, char openSlotChar) {
+        boolean result = false;
+        if (this.board[c.getX()][c.getY()] == openSlotChar)
+            result = true;
         return result;
     }
 
@@ -200,16 +202,5 @@ public class Board implements Cloneable {
         return result;
     }
 
-    //Chaning this function name might be for the best
-    public boolean isPositionAvailable(Coordinate c, char openSlotChar) throws BoardException {
-        boolean result = false;
-        if (isValidCoordinate(c)) {
-
-            if (this.board[c.getX()][c.getY()] == openSlotChar)
-                result = true;
-
-        }
-        return result;
-    }
 
 }

@@ -2,12 +2,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TicTacToe implements Ilayout, Cloneable {
+public class TicTacToe implements IGame, Cloneable {
 
     private static final int dim = 3;
     private Board board;
     private char currentPlayer;
-    private static char openingPiece;
+    private char openingPiece;
 
     /**
      * Constructor where a bidimensional char array is passed as an argument, creating a TicTacToe object.
@@ -17,6 +17,7 @@ public class TicTacToe implements Ilayout, Cloneable {
         setCurrentPlayer();
     }
 
+
     /**
      * Constructor without any argument. It creates the board array as an empty array.
      */
@@ -24,31 +25,16 @@ public class TicTacToe implements Ilayout, Cloneable {
         this.board = new Board(dim, '_');
     }
 
-//    public TicTacToe(String board) {
-//        char[][] b = new char[dim][dim];
-//        int j = 0;
-//        int k = 0;
-//        while (j < dim && k < dim) {
-//            for (int i = 0; i < board.length(); i++) {
-//                char letter = board.charAt(i);
-//                if (letter == '0' || letter == 'X') {
-//                    b[j][k++] = letter;
-//                } else if (letter == '|') {
-//                } else if (letter == '\n') {
-//                    j++;
-//                    k = 0;
-//                } else {
-//                    b[j][k++] = '_';
-//                }
-//            }
-//        }
-//        this.board = b;
-//        setCurrentPlayer();
-//    }
 
-
-    public Board getBoard() {
-        return this.board;
+    /**
+     * Constructor with the opening piece as arguments. It creates the board array as an empty array.
+     *
+     * @param openingPiece Piece selected to start the game
+     * @throws TicTacToeException in case the give opening piece is not valid for the tic tac toe game.
+     */
+    public TicTacToe(char openingPiece) throws TicTacToeException {
+        this.board = new Board(dim, '_');
+        setOpeningPiece(openingPiece);
     }
 
 
@@ -80,21 +66,13 @@ public class TicTacToe implements Ilayout, Cloneable {
     }
 
 
-    /**
-     * String representation of the tic tac toe board. Where "_" indicates a blank space.
-     *
-     * @return String
-     */
-    public String toString() {
-        return board.toString();
+    public static int getDim() {
+        return dim;
     }
 
-
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(board.getBoard());
+    public Board getBoard() {
+        return this.board;
     }
-
 
     public char getCurrentPlayer() {
         return currentPlayer;
@@ -104,23 +82,9 @@ public class TicTacToe implements Ilayout, Cloneable {
         return openingPiece;
     }
 
-    /**
-     * Verifies if an object is a TicTacToe and if so, then verifies if two TicTacToe objects are equal,
-     * that's if all their positions hold the same values.
-     *
-     * @param o other object to be compared
-     * @return boolean
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TicTacToe board = (TicTacToe) o;
-        if (!this.getBoard().equals(board.getBoard()))
-            return false;
-        if (this.getCurrentPlayer() != board.getCurrentPlayer() || this.getOpeningPiece() != board.getOpeningPiece())
-            return false;
-        return true;
+
+    public void setBoard(Board board) {
+        this.board = board;
     }
 
     /**
@@ -149,7 +113,7 @@ public class TicTacToe implements Ilayout, Cloneable {
 
     public void setOpeningPiece(char openingPiece) throws TicTacToeException {
         if (openingPiece == 'X' || openingPiece == '0') {
-            TicTacToe.openingPiece = openingPiece;
+            this.openingPiece = openingPiece;
             setCurrentPlayer();
         } else {
             throw new TicTacToeException("Wrong piece selected, select either 0 or X.");
@@ -166,8 +130,8 @@ public class TicTacToe implements Ilayout, Cloneable {
      * @throws CloneNotSupportedException in case it cannot create a new board to hold the new positions.
      */
     @Override
-    public List<Ilayout> children() throws CloneNotSupportedException {
-        List<Ilayout> children = new ArrayList<>();
+    public List<IGame> children() throws CloneNotSupportedException {
+        List<IGame> children = new ArrayList<>();
         char nextPiece;
 
         if (this.currentPlayer == 'X') nextPiece = 'X';
@@ -195,43 +159,12 @@ public class TicTacToe implements Ilayout, Cloneable {
     }
 
 
-    /**
-     * Creates a deepcopy of TicTacToe object.
-     *
-     * @return deep copy of this.board.
-     * @throws CloneNotSupportedException
-     */
-    protected Object clone() throws CloneNotSupportedException {
-
-        TicTacToe ticTacToeCopy = (TicTacToe) super.clone();
-
-        ticTacToeCopy.board = (Board) this.board.clone();
-
-
-//        System.out.println("Original is"+ this);
-//        System.out.println("Clone is" + ticTacToeCopy);
-//        ticTacToeCopy.getBoard().getBoard()[0][2] = '0';
-//        System.out.println("Original is"+ this);
-//        System.exit(0);
-
-
-        ticTacToeCopy.setCurrentPlayer();
-        try {
-            ticTacToeCopy.setOpeningPiece(this.getOpeningPiece());
-        } catch (TicTacToeException e) {
-            System.out.println(e.toString());
-        }
-
-        return ticTacToeCopy;
-    }
-
-
     @Override
     public String getStatus() {
         String result = "in progress";
-        if (checkCircles()) {
+        if (checkWin('0')) {
             result = "0";
-        } else if (checkCrosses()) {
+        } else if (checkWin('X')) {
             result = "X";
         } else if (checkDraw()) {
             result = "draw";
@@ -255,7 +188,7 @@ public class TicTacToe implements Ilayout, Cloneable {
             while (j < dim && this.board.getBoard()[i][j] == piece) {
                 counter++;
                 j++;
-                if (counter == 3)
+                if (counter == dim)
                     result = true;
             }
         }
@@ -270,7 +203,7 @@ public class TicTacToe implements Ilayout, Cloneable {
             while (i < dim && this.board.getBoard()[i][j] == piece) {
                 counter++;
                 i++;
-                if (counter == 3)
+                if (counter == dim)
                     result = true;
             }
         }
@@ -278,67 +211,113 @@ public class TicTacToe implements Ilayout, Cloneable {
     }
 
 
-    public boolean checkDiags(char piece) {
+    public boolean checkDiagonals(char piece) {
         boolean result = false;
         int j = 0;
         int counter = 0;
+
+        //check \ diagonal
         while (j < dim && this.board.getBoard()[j][j] == piece) {
             counter++;
             j++;
-            if (counter == 3)
+            if (counter == dim)
                 result = true;
         }
         j = 0;
         int i = dim - 1;
+
         counter = 0;
+        //check / diagonal
         while (j < dim && i >= 0 && this.board.getBoard()[i][j] == piece) {
             counter++;
             j++;
             i--;
-            if (counter == 3)
+            if (counter == dim)
                 result = true;
         }
 
         return result;
     }
 
-    private boolean checkCircles() {
+    private boolean checkWin(char piece) {
         boolean result = false;
-        char piece = '0';
-        if (checkRows(piece) || checkDiags(piece) || checkColumns(piece))
+        if (checkRows(piece) || checkDiagonals(piece) || checkColumns(piece))
             result = true;
         return result;
     }
 
-    private boolean checkCrosses() {
-        boolean result = false;
-        char piece = 'X';
-        if (checkRows(piece) || checkDiags(piece) || checkColumns(piece))
-            result = true;
-        return result;
-    }
 
-    public boolean placeMove(Coordinate c, char piece) throws TicTacToeException {
-        boolean result = false;
+    public void placeMove(Coordinate c, char piece) throws TicTacToeException {
         try {
             if (this.getBoard().isPositionAvailable(c, '_')) {
-
                 this.getBoard().placePiece(c, piece);
-
                 this.setCurrentPlayer();
-                result = true;
             } else {
-
                 throw new TicTacToeException("The selected position is already occupied.");
-
             }
         } catch (BoardException e) {
             System.out.println(e.toString());
             System.exit(0);
         }
-
-        return result;
     }
 
+
+    /**
+     * Creates a 'deep' copy of TicTacToe object.
+     *
+     * @return deep copy of this.board.
+     * @throws CloneNotSupportedException
+     */
+    protected Object clone() throws CloneNotSupportedException {
+
+        TicTacToe ticTacToeCopy = (TicTacToe) super.clone();
+
+        ticTacToeCopy.board = (Board) this.board.clone();
+
+//        System.out.println("Original is"+ this);
+//        System.out.println("Clone is" + ticTacToeCopy);
+//        ticTacToeCopy.getBoard().getBoard()[0][2] = '0';
+//        System.out.println("Original is"+ this);
+//        System.exit(0);
+        ticTacToeCopy.setCurrentPlayer();
+        try {
+            ticTacToeCopy.setOpeningPiece(this.getOpeningPiece());
+        } catch (TicTacToeException e) {
+            System.out.println(e.toString());
+        }
+        return ticTacToeCopy;
+    }
+
+    /**
+     * Verifies if an object is a TicTacToe and if so, then verifies if two TicTacToe objects are equal,
+     * that's if all their positions hold the same values.
+     *
+     * @param o other object to be compared
+     * @return boolean
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TicTacToe board = (TicTacToe) o;
+        if (!this.getBoard().equals(board.getBoard()))
+            return false;
+        return this.getCurrentPlayer() == board.getCurrentPlayer() && this.getOpeningPiece() == board.getOpeningPiece();
+    }
+
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(board.getBoard());
+    }
+
+    /**
+     * String representation of the tic tac toe board. Where "_" indicates a blank space.
+     *
+     * @return String
+     */
+    public String toString() {
+        return board.toString();
+    }
 
 }

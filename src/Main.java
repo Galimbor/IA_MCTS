@@ -9,11 +9,9 @@ public class Main {
         IRolloutPolicy rolloutPolicy = new RandomUniform();
         MCTS s = new MCTS(treePolicy, rolloutPolicy);
 
-        TicTacToe startingboard = new TicTacToe();
-        startingboard.setOpeningPiece('X');
         System.out.println("With which piece would you like to start the game? 0 or X?");
         char openingPiece = sc.next().charAt(0);
-        startingboard.setOpeningPiece(openingPiece);
+        TicTacToe startingboard = new TicTacToe(openingPiece);
 
         while (startingboard.getStatus().equals("in progress")) {
             System.out.println(startingboard);
@@ -31,7 +29,7 @@ public class Main {
             System.out.println(startingboard);
             System.out.println("Opponent is choosing its next move, please wait...");
             if (startingboard.getStatus().equals("in progress")) {
-                startingboard = (TicTacToe) s.solve(startingboard).getLayout();
+                startingboard = (TicTacToe) s.solve(startingboard).getGame();
             }
         }
         System.out.println(startingboard);
@@ -50,7 +48,7 @@ public class Main {
     }
 
     private static void iaPlaysFirst(TicTacToe startingboard, Scanner sc, MCTS mcts) throws CloneNotSupportedException {
-        TicTacToe result = (TicTacToe) mcts.solve(startingboard).getLayout();
+        TicTacToe result = (TicTacToe) mcts.solve(startingboard).getGame();
         System.out.println(result);
     }
 }
