@@ -6,7 +6,8 @@ public class Main {
         Scanner sc = new Scanner(System.in);
 
         ITreePolicy treePolicy = new UCT();
-        IRolloutPolicy rolloutPolicy = new RandomUniform();
+//        IRolloutPolicy rolloutPolicy = new RandomUniform();
+        IRolloutPolicy rolloutPolicy = new SpecialHeuristic();
         MCTS s = new MCTS(treePolicy, rolloutPolicy);
 
         TicTacToe startingboard = new TicTacToe();

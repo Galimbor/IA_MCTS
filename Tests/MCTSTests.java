@@ -1,7 +1,8 @@
-//import org.junit.Test;
-//
-//public class MCTSTests {
-//
+import org.junit.Assert;
+import org.junit.Test;
+
+public class MCTSTests {
+
 ////    @Test
 ////    public void simulationTest() throws CloneNotSupportedException {
 ////        MCTS mcts = new MCTS();
@@ -206,12 +207,41 @@
 //        MCTS.State s0 = new MCTS.State(board1, null);
 //        System.out.println(mcts.solve(s0.getLayout()));
 //    }
-//
-//
-//
-//
-//
-//
-//}
-//
-//
+
+
+    @Test
+    public void mctsTestPorra2() throws CloneNotSupportedException, TicTacToeException {
+        ITreePolicy treePolicy = new UCT();
+        IRolloutPolicy rolloutPolicy = new RandomUniform();
+        MCTS s = new MCTS(treePolicy, rolloutPolicy);
+        TicTacToe board1 = new TicTacToe(
+                "_X_",
+                "0X0",
+                "___");
+        board1.setOpeningPiece('0'); //TODO opening piece faz tomar decisao errada?
+        //TODO se trocar player para 0 da resultado certo
+        MCTS.State s0 = new MCTS.State(board1, null);
+        Assert.assertEquals(2, board1.getH());
+
+    }
+
+    @Test
+    public void mctsTestPorra3() throws CloneNotSupportedException, TicTacToeException {
+        ITreePolicy treePolicy = new UCT();
+        IRolloutPolicy rolloutPolicy = new RandomUniform();
+        MCTS s = new MCTS(treePolicy, rolloutPolicy);
+        TicTacToe board1 = new TicTacToe(
+                "_X_",
+                "0_0",
+                "_X_");
+        board1.setOpeningPiece('0'); //TODO opening piece faz tomar decisao errada?
+        //TODO se trocar player para 0 da resultado certo
+        MCTS.State s0 = new MCTS.State(board1, null);
+        Assert.assertEquals(0, board1.getH());
+
+    }
+
+
+}
+
+

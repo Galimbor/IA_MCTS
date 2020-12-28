@@ -252,7 +252,7 @@ class MCTS {
         State result;
         player = s.getCurrentPlayer();
         long start = System.currentTimeMillis();//Since we'll have two minutes for a game i'm thinking about
-        long end = start + 100; // 5 seconds
+        long end = start + 25; // 5 seconds
         //Root of our tree
         State root = new State(s, null);
         while (System.currentTimeMillis() < end) {

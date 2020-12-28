@@ -2,6 +2,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class represents a generic board, using a bidimensional char matrix.
+ */
 public class Board implements Cloneable {
 
     private int numberRows;
@@ -12,10 +15,12 @@ public class Board implements Cloneable {
     /**
      * Constructor without any argument. It creates the board array as an empty array.
      */
-    public Board(int dimension, char filler) {
+    public Board(int dimension, char filler) throws BoardException {
 
-        this.numberRows = dimension;
-        this.numberColumns = dimension;
+
+        setNumberRows(dimension);
+        setNumberColumns(dimension);
+
 
         char[][] b = new char[this.numberRows][this.numberColumns];
 
@@ -33,11 +38,11 @@ public class Board implements Cloneable {
      * @throws IllegalStateException in case the Java application is not in an appropriate state for the requested
      *                               operation.
      */
-    public Board(int dimension, String[] row1Splitted, String[] row2Splitted, String[] row3Splitted) throws IllegalStateException {
+    public Board(int dimension, String[] row1Splitted, String[] row2Splitted, String[] row3Splitted) throws IllegalStateException, BoardException {
 
 
-        this.numberRows = dimension;
-        this.numberColumns = dimension;
+        setNumberRows(dimension);
+        setNumberColumns(dimension);
 
         //New board
         board = new char[this.numberRows][this.numberColumns];
@@ -71,11 +76,11 @@ public class Board implements Cloneable {
         return numberRows;
     }
 
-    public void setNumberRows(int numberRows) {
+    public void setNumberRows(int numberRows) throws BoardException {
         if (numberRows >= 0)
             this.numberRows = numberRows;
         else {
-            //throw exception
+            throw new BoardException("Invalid number of rows. Please use a value >= 0.");
         }
     }
 
@@ -83,11 +88,11 @@ public class Board implements Cloneable {
         return numberColumns;
     }
 
-    public void setNumberColumns(int numberColumns) {
+    public void setNumberColumns(int numberColumns) throws BoardException {
         if (numberColumns >= 0)
             this.numberColumns = numberColumns;
         else {
-            //throw exception
+            throw new BoardException("Invalid number of rows. Please use a value >= 0.");
         }
     }
 
@@ -121,22 +126,16 @@ public class Board implements Cloneable {
         return emptyPositions;
     }
 
-    public boolean placePiece(Coordinate c, char piece) throws BoardException {
-        boolean result = false;
+    public void placePiece(Coordinate c, char piece) throws BoardException {
+//        boolean result = false;
         if (isValidCoordinate(c)) {
             this.board[c.getX()][c.getY()] = piece;
-            result = true;
-        } else {
-
-//            System.out.println("Illegal move, selected position is already occupied or it doesn't exists in the board");
-            //Board says no
-            //violação é feita aqui, não no tictactoe
-//            System.out.println("Illegal move, selected move is already occupied or it doesn't exists in the board");
+//            result = true;
         }
-        return result;
+//        return result;
     }
 
-    private boolean isValidCoordinate(Coordinate c) throws BoardException {
+    public boolean isValidCoordinate(Coordinate c) throws BoardException {
         boolean result = false;
         int row = c.getX();
         int column = c.getY();
@@ -173,8 +172,14 @@ public class Board implements Cloneable {
     protected Object clone() throws CloneNotSupportedException {
         Board boardCopy = (Board) super.clone();
         boardCopy.board = new char[this.numberRows][this.getNumberColumns()];
-        boardCopy.setNumberColumns(this.getNumberColumns());
-        boardCopy.setNumberRows(this.getNumberRows());
+        try {
+            boardCopy.setNumberColumns(this.getNumberColumns());
+            boardCopy.setNumberRows(this.getNumberRows());
+        } catch (BoardException e) {
+            System.out.println(e.toString());
+            System.exit(0);
+        }
+
         for (int i = 0; i < this.numberRows; i++) {
             for (int j = 0; j < this.numberColumns; j++) {
                 boardCopy.board[i][j] = this.board[i][j];

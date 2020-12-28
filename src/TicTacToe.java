@@ -21,7 +21,12 @@ public class TicTacToe implements Ilayout, Cloneable {
      * Constructor without any argument. It creates the board array as an empty array.
      */
     public TicTacToe() {
-        this.board = new Board(dim, '_');
+        try {
+            this.board = new Board(dim, '_');
+        } catch (BoardException e) {
+            System.out.println(e.toString());
+            System.exit(0);
+        }
     }
 
 //    public TicTacToe(String board) {
@@ -73,7 +78,12 @@ public class TicTacToe implements Ilayout, Cloneable {
             throw new TicTacToeException("Invalid arg in TicTacToe constructor");
         }
 
-        this.board = new Board(dim, row1Splitted, row2Splitted, row3Splitted);
+        try {
+            this.board = new Board(dim, row1Splitted, row2Splitted, row3Splitted);
+        } catch (BoardException e) {
+            System.out.println(e.toString());
+            System.exit(0);
+        }
 
         //Set current player
         setCurrentPlayer();
@@ -99,6 +109,7 @@ public class TicTacToe implements Ilayout, Cloneable {
     public char getCurrentPlayer() {
         return currentPlayer;
     }
+
 
     public char getOpeningPiece() {
         return openingPiece;
@@ -340,5 +351,93 @@ public class TicTacToe implements Ilayout, Cloneable {
         return result;
     }
 
+
+    /*************************************
+     THIS BELONGS TO THE HEURISTICS
+     /*************************************/
+
+    private int checkOpenDiag(char piece) {
+        int result = 0;
+        int j = 0;
+        int counter = 0;
+        while (j < dim && (this.board.getBoard()[j][j] == piece || this.board.getBoard()[j][j] == '_')) {
+            counter++;
+            j++;
+            if (counter == 3)
+                result++;
+        }
+        j = 0;
+        int i = dim - 1;
+        counter = 0;
+        while (j < dim && i >= 0 && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == '_')) {
+            counter++;
+            j++;
+            i--;
+            if (counter == 3)
+                result++;
+        }
+
+        return result;
+    }
+
+
+    public int checkOpenColumns(char piece) {
+        int result = 0;
+        for (int j = 0; j < dim; j++) {
+            int i = 0;
+            int counter = 0;
+            while (i < dim && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == '_')) {
+                counter++;
+                i++;
+                if (counter == 3)
+                    result++;
+            }
+        }
+        return result;
+    }
+
+    public int checkOpenRows(char piece) {
+        int result = 0;
+        for (int i = 0; i < dim; i++) {
+            int j = 0;
+            int counter = 0;
+            while (j < dim && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == '_')) {
+                counter++;
+                j++;
+                if (counter == 3)
+                    result++;
+            }
+        }
+        return result;
+    }
+
+    private int checkOpenCircles() {
+        int result = 0;
+        char piece = '0';
+        result += checkOpenRows(piece);
+        result += checkOpenColumns(piece);
+        result += checkOpenDiag(piece);
+        return result;
+    }
+
+    private int checkOpenCrosses() {
+        int result = 0;
+        char piece = 'X';
+        result += checkOpenRows(piece);
+        result += checkOpenColumns(piece);
+        result += checkOpenDiag(piece);
+        return result;
+    }
+
+    @Override
+    public int getH() {
+        int result = 0;
+
+        char lastPlayer = getCurrentPlayer() == 'X' ? 'Y' : 'X';
+        if (lastPlayer == 'X') result = checkOpenCrosses() - checkOpenCircles();
+        else result = checkOpenCircles() - checkOpenCrosses();
+
+        return result;
+    }
 
 }
