@@ -1,5 +1,5 @@
 /**
- * Exception for the BoardException class in case violates the contract made by SentinelLL.
+ * Exception for the BoardException class in case violates the contract made by Board
  */
 
 public class BoardException extends Exception {

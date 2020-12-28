@@ -1,6 +1,6 @@
 
 /**
- * Exception for the SentinelLL class in case violates the contract made by SentinelLL.
+ * Exception for the TicTacToe class in case violates the contract made by TicTacToe.
  */
 
 public class TicTacToeException extends Exception {

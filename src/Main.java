@@ -16,7 +16,7 @@ public class Main {
 
         while (startingboard.getStatus().equals("in progress")) {
             System.out.println(startingboard);
-            Coordinate c = selectMove(sc);
+            Point c = selectMove(sc);
             try {
                 startingboard.placeMove(c, openingPiece);
             } catch (TicTacToeException tttE) {
@@ -39,13 +39,13 @@ public class Main {
     }
 
 
-    private static Coordinate selectMove(Scanner sc) {
+    private static Point selectMove(Scanner sc) {
         System.out.println("select your move: ");
         System.out.println("Enter number of row");
         int row = Integer.parseInt(sc.next()) - 1;//to make it more easy
         System.out.println("Enter number of column:");
         int column = Integer.parseInt(sc.next()) - 1; // to make it more easy
-        return new Coordinate(row, column);
+        return new Point(row, column);
     }
 
     private static void iaPlaysFirst(TicTacToe startingboard, Scanner sc, MCTS mcts) throws CloneNotSupportedException {

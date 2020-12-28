@@ -3,124 +3,36 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+
+/***
+ * MCTS (Monte Carlo tree search) class represents the algorithm with the same name which figures out
+ * the best move out of a set of moves by Selecting -> Expanding -> Simulating -> Updating the nodes
+ * in tree to find the best solution.
+ * It has three data members:
+ * - iAPlayer : a char that represents the player that is playing accordingly to the MCTS solution
+ * - treePolicy : the tree policy that is going to be used along with the MCTS, UCT is the most famous
+ * one, it is represented by a class object which implements the ITreePolicy Interface
+ * - rolloutPolicy : the rollout policy is used to choose a node after the expansion, MCTS uses a policy
+ * based on randomness, but other approaches can be used, it is represented by a class object which
+ * implements the IRolloutPolicy
+ */
+
 class MCTS {
-
-    /**
-     * Representation of the board in a given time. State is represented by the layout, the link to the
-     * previous state and the cost in which it took from the initial state to the current one.
-     *
-     * @inv g >= 0
-     */
-    static class State {
-
-        private IGame game;
-        private State father;
-        private int visitCount;
-        private int winCount;
-
-        public void setGame(IGame game) {
-            this.game = game;
-        }
-
-        public void setFather(State father) {
-            this.father = father;
-        }
-
-
-        public void setWinStatus(int winStatus) {
-            this.winStatus = winStatus;
-        }
-
-        private int winStatus;// thils will the in the board
-
-        private List<State> childArray = new ArrayList<>();//This will be holding the state's childs
-        //We'll need it for several iterations of MCTS
-
-        public List<State> getChildArray() {
-            return childArray;
-        }
-
-        public IGame getGame() {
-            return game;
-        }
-
-
-        public int getWinStatus() {
-            return winStatus;
-        }
-
-        /**
-         * Constructor
-         *
-         * @param l - instance of a class that implements the Ilayout interface
-         * @param n - state that represents the father or null if it doesnt have any.
-         */
-        public State(IGame l, State n) {
-            game = l;
-            father = n;
-            visitCount = 0;
-            winCount = 0;
-        }
-
-
-        public void setChildArray(List<State> childArray) {
-            this.childArray = childArray;
-        }
-
-        public void setVisitCount(int visitCount) {
-            this.visitCount = visitCount;
-        }
-
-        public void setWinCount(int winCount) {
-            this.winCount = winCount;
-        }
-
-        public int getVisitCount() {
-            return visitCount;
-        }
-
-        public int getWinCount() {
-            return winCount;
-        }
-
-        /**
-         * Return a string the "represents" the state class. It will be represented by the layout.
-         *
-         * @return string
-         */
-        public String toString() {
-            return game.toString();
-        }
-
-
-        /**
-         * Equals override to compare the configurations of a given state layout.
-         *
-         * @param o - the reference object with which to compare.
-         * @return true if this object is the same as the obj argument; false otherwise.
-         */
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            State state = (State) o;
-            return game.equals(state.game);
-        }
-    }
-
-
 
     private char iAPlayer;
     private final ITreePolicy treePolicy;
     private final IRolloutPolicy rolloutPolicy;
 
-
-    //Constructor using interfaces
+    /***
+     * MCTS constructor that receives the policies as arguments
+     *
+     * @param treePolicy class object that implements the ITreePolicy Interface
+     * @param rolloutPolicy class object that implements the IRolloutPolicy Interface
+     */
     public MCTS(ITreePolicy treePolicy, IRolloutPolicy rolloutPolicy) {
         this.treePolicy = treePolicy;
         this.rolloutPolicy = rolloutPolicy;
     }
-
 
 
     /***
@@ -135,8 +47,8 @@ class MCTS {
      */
     public List<State> sucessores(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
-        List<IGame> children = n.game.children();
-        for (IGame e : children) {
+        List<IBoardGame> children = n.game.children();
+        for (IBoardGame e : children) {
             State nn = new State(e, n);
             sucs.add(nn);
         }
@@ -197,8 +109,14 @@ class MCTS {
         }
         status = tempNode.getGame().getStatus();
         if (status.equals(String.valueOf(iAPlayer))) {
+            int counter = 1;
+            while (tempNode.father != null) {
+                counter++;
+                tempNode = tempNode.father;
+            }
 //            System.out.println(status + " and player = " + player);
-            result = 1;
+
+            result = 1 + 1 / counter;
         } else if (status.equals("draw")) {
             //do nothing
         } else {
@@ -250,12 +168,11 @@ class MCTS {
      * @pre true.
      * @post if no exception has been thrown it should solve the problem and an iterator or null will be returned.
      */
-    final
-    public State solve(IGame s) throws CloneNotSupportedException {
+    final public State solve(IBoardGame s) throws CloneNotSupportedException {
         State result;
-        iAPlayer = s.getCurrentPlayer();
-        long start = System.currentTimeMillis();//Since we'll have two minutes for a game i'm thinking about
-        long end = start + 1000; // 5 seconds
+        this.iAPlayer = s.getCurrentPlayer();
+        long start = System.currentTimeMillis();
+        long end = start + 25; // 5 seconds
         //Root of our tree
         State root = new State(s, null);
         while (System.currentTimeMillis() < end) {
@@ -266,7 +183,7 @@ class MCTS {
                 expansion(actual);
             }
             if (actual.getChildArray().size() > 0) {
-                actual = RandomUniform.pickRandom(actual.getChildArray());
+                actual = this.rolloutPolicy.select(actual.getChildArray());
             }
             simulation_result = simulation(actual);
             backpropagate(actual, simulation_result);
@@ -284,7 +201,115 @@ class MCTS {
         result = bestChild(root);
         return result;
 
+    }
 
+    /************************ | State Class | *************************
+
+    /**
+     * Representation of the board game in a given time. State is represented by the game, the link to the
+     * previous state, the number of visits and the number of wins.
+     * Those data members are:
+     * - game : An object of a class that implements the Interface IBoardGame that represents a board game
+     * - father : A State object that is the previous State before it
+     * - visitCount : An int that holds the number of times that this node was visited
+     * - winCount : An int that holds the score of this node, this depends of how many times it belonged to
+     * a winning path
+     */
+    static class State {
+
+        private IBoardGame game;
+        private State father;
+        private int visitCount;
+        private int winCount;
+
+
+        /**
+         * Constructor
+         *
+         * @param l - instance of a class that implements the Ilayout interface
+         * @param n - state that represents the father or null if it doesnt have any.
+         */
+        public State(IBoardGame l, State n) {
+            game = l;
+            father = n;
+            visitCount = 0;
+            winCount = 0;
+        }
+
+
+        public void setFather(State father) {
+            this.father = father;
+        }
+
+
+        public void setWinStatus(int winStatus) {
+            this.winStatus = winStatus;
+        }
+
+        private int winStatus;// thils will the in the board
+
+        private List<State> childArray = new ArrayList<>();//This will be holding the state's childs
+        //We'll need it for several iterations of MCTS
+
+        public List<State> getChildArray() {
+            return childArray;
+        }
+
+        public IBoardGame getGame() {
+            return game;
+        }
+
+        public void setGame(IBoardGame game) {
+            this.game = game;
+        }
+
+        public int getWinStatus() {
+            return winStatus;
+        }
+
+        public void setChildArray(List<State> childArray) {
+            this.childArray = childArray;
+        }
+
+        public void setVisitCount(int visitCount) {
+            this.visitCount = visitCount;
+        }
+
+        public void setWinCount(int winCount) {
+            this.winCount = winCount;
+        }
+
+        public int getVisitCount() {
+            return visitCount;
+        }
+
+        public int getWinCount() {
+            return winCount;
+        }
+
+        /**
+         * Return a string the "represents" the state class. It will be represented by the layout.
+         *
+         * @return string
+         */
+        public String toString() {
+            return game.toString();
+        }
+
+
+        /**
+         * Equals override to compare the configurations of a given state layout.
+         *
+         * @param o - the reference object with which to compare.
+         * @return true if this object is the same as the obj argument; false otherwise.
+         */
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            State state = (State) o;
+            return game.equals(state.game);
+        }
     }
 
 }

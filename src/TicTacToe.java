@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TicTacToe implements IGame, Cloneable {
+public class TicTacToe implements IBoardGame, Cloneable {
 
     private static final int dim = 3;
     private Board board;
@@ -12,7 +12,7 @@ public class TicTacToe implements IGame, Cloneable {
     /**
      * Constructor where a bidimensional char array is passed as an argument, creating a TicTacToe object.
      */
-    public TicTacToe(char[][] board) {
+    public TicTacToe(char[][] board) throws BoardException {
         this.board = new Board(board);
         setCurrentPlayer();
     }
@@ -44,6 +44,7 @@ public class TicTacToe implements IGame, Cloneable {
 
 
     /**
+     * TESTS-ONLY
      * Create a new board given the rows of the game
      *
      * @param row1 First row of tic tac toe game
@@ -141,15 +142,15 @@ public class TicTacToe implements IGame, Cloneable {
      * @throws CloneNotSupportedException in case it cannot create a new board to hold the new positions.
      */
     @Override
-    public List<IGame> children() throws CloneNotSupportedException {
-        List<IGame> children = new ArrayList<>();
+    public List<IBoardGame> children() throws CloneNotSupportedException {
+        List<IBoardGame> children = new ArrayList<>();
         char nextPiece;
 
         if (this.currentPlayer == 'X') nextPiece = 'X';
         else nextPiece = '0';
 
-        List<Coordinate> availablePositions = this.getEmptyPositions();
-        for (Coordinate c : availablePositions) {
+        List<Point> availablePositions = this.getEmptyPositions();
+        for (Point c : availablePositions) {
             TicTacToe b = (TicTacToe) this.clone();
             try {
                 b.placeMove(c, nextPiece);
@@ -163,8 +164,8 @@ public class TicTacToe implements IGame, Cloneable {
     }
 
     @Override
-    public List<Coordinate> getEmptyPositions() {
-        return this.board.getCharPositions('_');
+    public List<Point> getEmptyPositions() {
+        return this.board.getElementPositions('_');
     }
 
 
@@ -284,10 +285,10 @@ public class TicTacToe implements IGame, Cloneable {
      * @param piece
      * @throws TicTacToeException
      */
-    public void placeMove(Coordinate c, char piece) throws TicTacToeException {
+    public void placeMove(Point c, char piece) throws TicTacToeException {
         try {
             if (this.getBoard().isPositionAvailable(c, '_')) {
-                this.getBoard().placePiece(c, piece);
+                this.getBoard().placeElement(c, piece);
                 this.setCurrentPlayer();
             } else {
                 throw new TicTacToeException("The selected position is already occupied.");
@@ -302,8 +303,8 @@ public class TicTacToe implements IGame, Cloneable {
     /**
      * Creates a 'deep' copy of TicTacToe object.
      *
-     * @return deep copy of this.board.
-     * @throws CloneNotSupportedException
+     * @return deep copy of the object
+     * @throws CloneNotSupportedException if
      */
     protected Object clone() throws CloneNotSupportedException {
 
