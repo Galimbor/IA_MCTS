@@ -37,7 +37,7 @@ public class TicTacToe implements IGame, Cloneable {
      * @param openingPiece Piece selected to start the game
      * @throws TicTacToeException in case the give opening piece is not valid for the tic tac toe game.
      */
-    public TicTacToe(char openingPiece) throws TicTacToeException {
+    public TicTacToe(char openingPiece) throws TicTacToeException, BoardException {
         this.board = new Board(dim, '_');
         setOpeningPiece(openingPiece);
     }

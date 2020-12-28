@@ -218,8 +218,7 @@ public class MCTSTests {
                 "_X_",
                 "0X0",
                 "___");
-        board1.setOpeningPiece('0'); //TODO opening piece faz tomar decisao errada?
-        //TODO se trocar player para 0 da resultado certo
+        board1.setOpeningPiece('0');
         MCTS.State s0 = new MCTS.State(board1, null);
         Assert.assertEquals(2, board1.getH());
 
@@ -234,8 +233,7 @@ public class MCTSTests {
                 "_X_",
                 "0_0",
                 "_X_");
-        board1.setOpeningPiece('0'); //TODO opening piece faz tomar decisao errada?
-        //TODO se trocar player para 0 da resultado certo
+        board1.setOpeningPiece('0');
         MCTS.State s0 = new MCTS.State(board1, null);
         Assert.assertEquals(0, board1.getH());
 

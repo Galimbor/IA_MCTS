@@ -15,15 +15,13 @@ public class Board implements Cloneable {
     /**
      * Constructor without any argument. It creates the board array as an empty array.
      */
-    public Board(int dimension, char filler) {
+    public Board(int dimension, char filler) throws BoardException {
 
         setNumberRows(dimension);
         setNumberColumns(dimension);
 
 
-        char[][] b = new char[this.numberRows][this.numberColumns];
-
-        this.board = b;
+        this.board = new char[this.numberRows][this.numberColumns];
 
         fillBoardWithChar(filler);
     }
@@ -133,16 +131,13 @@ public class Board implements Cloneable {
 
 
     public boolean isValidCoordinate(Coordinate c) throws BoardException {
-        boolean result = false;
         int row = c.getX();
         int column = c.getY();
-//        System.out.println("this is row" + row + "and column " + column  );
         if ((row >= 0 && row < this.getNumberRows()) && (column >= 0 && column < this.getNumberColumns()))
-            result = true;
+            return true;
         else {
             throw new BoardException("Selected position doesn't exist in the board.");
         }
-        return result;
     }
 
     //TODO Changing this function name might be for the best

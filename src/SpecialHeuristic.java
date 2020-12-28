@@ -7,6 +7,6 @@ public class SpecialHeuristic implements IRolloutPolicy {
 
     @Override
     public MCTS.State select(List<MCTS.State> nodes) {
-        return Collections.max(nodes, Comparator.comparing(c -> c.getLayout().getH()));
+        return Collections.max(nodes, Comparator.comparing(c -> c.getGame().getH()));
     }
 }
