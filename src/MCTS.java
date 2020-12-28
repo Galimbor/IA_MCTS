@@ -109,6 +109,7 @@ class MCTS {
     }
 
 
+
     private char iAPlayer;
     private final ITreePolicy treePolicy;
     private final IRolloutPolicy rolloutPolicy;
@@ -175,15 +176,15 @@ class MCTS {
      * @return the score depending if node reached is a win, loss or a draw
      * @throws CloneNotSupportedException
      */
-    public int simulation(State node) throws CloneNotSupportedException { //TODO rever, nao funciona para outros jogos
+    public int simulation(State node) throws CloneNotSupportedException {
         //End result
         int result = 0;
 
         //Node randomly choosen
         State tempNode = node;
         String status = tempNode.getGame().getStatus();
-        if ((status.equals("X") || status.equals("0")) && iAPlayer == tempNode.getGame().getCurrentPlayer()) {
-            node.father.setWinCount(-9999); //TODO review this value
+        if ((!status.equals("in progress") && !status.equals("draw")) && iAPlayer == tempNode.getGame().getCurrentPlayer()) {
+            node.father.setWinCount(-9999);
 //            System.out.println(node.father.getWinCount());
 //            System.out.println(node.father + " defeat");
         }
