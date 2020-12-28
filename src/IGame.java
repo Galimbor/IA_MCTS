@@ -28,5 +28,8 @@ public interface IGame {
     char getCurrentPlayer();
 
 
+    //Returns the value following a certain heuristic
+    int getH();
+
 }
 
