@@ -68,11 +68,11 @@ public class Board implements Cloneable {
         return numberRows;
     }
 
-    public void setNumberRows(int numberRows) {
+    public void setNumberRows(int numberRows) throws BoardException {
         if (numberRows >= 0)
             this.numberRows = numberRows;
         else {
-            //throw exception
+            throw new BoardException("Invalid number of rows, it must be >= 0");
         }
     }
 
@@ -80,11 +80,11 @@ public class Board implements Cloneable {
         return numberColumns;
     }
 
-    public void setNumberColumns(int numberColumns) {
+    public void setNumberColumns(int numberColumns) throws BoardException {
         if (numberColumns >= 0)
             this.numberColumns = numberColumns;
         else {
-            //throw exception
+            throw new BoardException("Invalid number of columns, it must be >= 0");
         }
     }
 
@@ -119,31 +119,28 @@ public class Board implements Cloneable {
     }
 
     public void placePiece(Coordinate c, char piece) throws BoardException {
-        if (isValidCoordinate(c)) {
+        if (isValidCoordinate(c))
             this.board[c.getX()][c.getY()] = piece;
-        } else {
-
-//            System.out.println("Illegal move, selected position is already occupied or it doesn't exists in the board");
-            //Board says no
-            //violação é feita aqui, não no tictactoe
-//            System.out.println("Illegal move, selected move is already occupied or it doesn't exists in the board");
-        }
+//        } else {
+//
+////            System.out.println("Illegal move, selected position is already occupied or it doesn't exists in the board");
+//            //Board says no
+//            //violação é feita aqui, não no tictactoe
+////            System.out.println("Illegal move, selected move is already occupied or it doesn't exists in the board");
+//        }
     }
 
     private boolean isValidCoordinate(Coordinate c) throws BoardException {
-        boolean result = false;
         int row = c.getX();
         int column = c.getY();
-//        System.out.println("this is row" + row + "and column " + column  );
         if ((row >= 0 && row < this.getNumberRows()) && (column >= 0 && column < this.getNumberColumns()))
-            result = true;
+            return true;
         else {
             throw new BoardException("Selected position doesn't exist in the board.");
         }
-        return result;
     }
 
-    //Chaning this function name might be for the best
+    //TODO Changing this function name might be for the best
     public boolean isPositionAvailable(Coordinate c, char openSlotChar) {
         boolean result = false;
         if (this.board[c.getX()][c.getY()] == openSlotChar)
@@ -175,8 +172,12 @@ public class Board implements Cloneable {
     protected Object clone() throws CloneNotSupportedException {
         Board boardCopy = (Board) super.clone();
         boardCopy.board = new char[this.numberRows][this.getNumberColumns()];
-        boardCopy.setNumberColumns(this.getNumberColumns());
-        boardCopy.setNumberRows(this.getNumberRows());
+        try {
+            boardCopy.setNumberColumns(this.getNumberColumns());
+            boardCopy.setNumberRows(this.getNumberRows());
+        } catch (BoardException e) {
+            e.printStackTrace();
+        }
         for (int i = 0; i < this.numberRows; i++) {
             for (int j = 0; j < this.numberColumns; j++) {
                 boardCopy.board[i][j] = this.board[i][j];
@@ -201,6 +202,4 @@ public class Board implements Cloneable {
 
         return result;
     }
-
-
 }

@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 
 class MCTS {
+
     /**
      * Representation of the board in a given time. State is represented by the layout, the link to the
      * previous state and the cost in which it took from the initial state to the current one.
@@ -121,15 +122,15 @@ class MCTS {
 
 
 
-    /**
-     * //     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
-     * //     *
-     * //     * @param n - state that will be used to get its children.
-     * //     * @return list of states.
-     * //     * @throws CloneNotSupportedException
-     * //     * @pre true.
-     * //     * @post list of states that has at least 1 element and a maximum of 4.
-     * //
+    /***
+     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
+     *
+     * @param n - state that will be used to get its children.
+     * @return list of states.
+     *  @throws CloneNotSupportedException if the clone method in class TicTacToe has been called to clone an object,
+     *  but the object's class does not implement the Cloneable interface.
+     *  @pre true
+     *  @post list of states of the successors of the given state
      */
     public List<State> sucessores(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
@@ -142,7 +143,11 @@ class MCTS {
     }
 
 
-    //Selection part of MCTS(using UCT)
+    /*** Selection
+     *
+     * @param root
+     * @return
+     * */
     public State selection(State root) {
         State node = root;
         while (node.getChildArray().size() != 0) //It has to have children
@@ -152,8 +157,11 @@ class MCTS {
         return node;
     }
 
-
-    //Expansion
+    /***
+     *
+     * @param node
+     * @throws CloneNotSupportedException
+     */
     public void expansion(State node) throws CloneNotSupportedException {
         node.setChildArray(sucessores(node));
         //Need to find a way to say who's playing -- I think it's done ?
@@ -161,7 +169,12 @@ class MCTS {
     }
 
 
-    //Simulation using a rollout policy random uniform
+    /***
+     *
+     * @param node from where the simulation will start
+     * @return the score depending if node reached is a win, loss or a draw
+     * @throws CloneNotSupportedException
+     */
     public int simulation(State node) throws CloneNotSupportedException { //TODO rever, nao funciona para outros jogos
         //End result
         int result = 0;
@@ -194,7 +207,11 @@ class MCTS {
     }
 
 
-    //backpropagation
+    /***
+     *
+     * @param node
+     * @param result
+     */
     public void backpropagate(State node, int result) {
 
         while (node.father != null) {
@@ -211,7 +228,11 @@ class MCTS {
     }
 
 
-    //best_child
+    /***
+     *
+     * @param root
+     * @return
+     */
     private State bestChild(State root) {
         //Returning the root child who has the most visits
         return Collections.max(root.getChildArray(), Comparator.comparing(State::getVisitCount));

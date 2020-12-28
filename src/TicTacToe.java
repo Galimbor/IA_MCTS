@@ -126,7 +126,7 @@ public class TicTacToe implements IGame, Cloneable {
      * Missing optimization
      * Computes a List containing the boards with all the possible moves for the current player.
      *
-     * @return children of this board.
+     * @return List of children of this board.
      * @throws CloneNotSupportedException in case it cannot create a new board to hold the new positions.
      */
     @Override
@@ -147,8 +147,6 @@ public class TicTacToe implements IGame, Cloneable {
                 System.exit(0);
             }
             children.add(b);
-
-
         }
         return children;
     }
@@ -172,7 +170,10 @@ public class TicTacToe implements IGame, Cloneable {
         return result;
     }
 
-
+    /***
+     *
+     * @return
+     */
     private boolean checkDraw() {
         boolean result = false;
         if (this.getEmptyPositions().size() == 0)
@@ -180,6 +181,23 @@ public class TicTacToe implements IGame, Cloneable {
         return result;
     }
 
+    /***
+     *
+     * @param piece
+     * @return
+     */
+    private boolean checkWin(char piece) {
+        boolean result = false;
+        if (checkRows(piece) || checkDiagonals(piece) || checkColumns(piece))
+            result = true;
+        return result;
+    }
+
+    /***
+     *
+     * @param piece
+     * @return
+     */
     public boolean checkRows(char piece) {
         boolean result = false;
         for (int i = 0; i < dim; i++) {
@@ -195,6 +213,11 @@ public class TicTacToe implements IGame, Cloneable {
         return result;
     }
 
+    /***
+     *
+     * @param piece
+     * @return
+     */
     public boolean checkColumns(char piece) {
         boolean result = false;
         for (int j = 0; j < dim; j++) {
@@ -210,7 +233,11 @@ public class TicTacToe implements IGame, Cloneable {
         return result;
     }
 
-
+    /***
+     *
+     * @param piece
+     * @return
+     */
     public boolean checkDiagonals(char piece) {
         boolean result = false;
         int j = 0;
@@ -239,14 +266,13 @@ public class TicTacToe implements IGame, Cloneable {
         return result;
     }
 
-    private boolean checkWin(char piece) {
-        boolean result = false;
-        if (checkRows(piece) || checkDiagonals(piece) || checkColumns(piece))
-            result = true;
-        return result;
-    }
 
-
+    /***
+     *
+     * @param c
+     * @param piece
+     * @throws TicTacToeException
+     */
     public void placeMove(Coordinate c, char piece) throws TicTacToeException {
         try {
             if (this.getBoard().isPositionAvailable(c, '_')) {
