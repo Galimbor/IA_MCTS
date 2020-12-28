@@ -43,7 +43,7 @@ class MCTS {
      *  @throws CloneNotSupportedException if the clone method in class TicTacToe has been called to clone an object,
      *  but the object's class does not implement the Cloneable interface.
      *  @pre true
-     *  @post list of states of the successors of the given state
+     *  @pos list of states of the successors of the given state
      */
     public List<State> sucessores(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
