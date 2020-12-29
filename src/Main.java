@@ -30,7 +30,7 @@ public class Main {
             System.out.println(startingboard);
             System.out.println("Opponent is choosing its next move, please wait...");
             if (startingboard.getStatus().equals("in progress")) {
-                startingboard = (TicTacToe) s.solve(startingboard).getGame();
+                startingboard = (TicTacToe) s.bestNextMove(startingboard).getGame();
             }
         }
         System.out.println(startingboard);
@@ -48,8 +48,8 @@ public class Main {
         return new Point(row, column);
     }
 
-    private static void iaPlaysFirst(TicTacToe startingboard, Scanner sc, MCTS mcts) throws CloneNotSupportedException {
-        TicTacToe result = (TicTacToe) mcts.solve(startingboard).getGame();
+    private static void iaPlaysFirst(TicTacToe startingboard, Scanner sc, MCTS mcts) throws CloneNotSupportedException, MCTSException {
+        TicTacToe result = (TicTacToe) mcts.bestNextMove(startingboard).getGame();
         System.out.println(result);
     }
 }
