@@ -171,7 +171,7 @@ public class BoardUnitTests {
     }
 
     @Test
-    public void testIsValidCoordinate() throws BoardException {
+    public void testIsValidPoint() throws BoardException {
         Board bd1 = new Board(3, '_');
         List<Point> points = new ArrayList<>();
         points.add(new Point(0, 0));
@@ -185,7 +185,7 @@ public class BoardUnitTests {
     }
 
     @Test(expected = BoardException.class)
-    public void testIsValidCoordinate2() throws BoardException {
+    public void testIsValidPoint2() throws BoardException {
         Board bd1 = new Board(3, '_');
 
         List<Point> points = new ArrayList<>();
@@ -198,6 +198,97 @@ public class BoardUnitTests {
         }
     }
 
+    @Test
+    public void checkRowsTest() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0_X", "0__", "0_X");
+        TicTacToe b2 = new TicTacToe("000", "0X_", "0_X");
+        TicTacToe b3 = new TicTacToe("0X0", "0X_", "000");
+        Assert.assertFalse(b1.getBoard().checkRows('0'));
+        Assert.assertTrue(b2.getBoard().checkRows('0'));
+        Assert.assertTrue(b3.getBoard().checkRows('0'));
+
+
+    }
+
+    @Test
+    public void checkRowsTest2() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0_X", "___", "0_X");
+        TicTacToe b2 = new TicTacToe("000", "0__", "0_X");
+        TicTacToe b3 = new TicTacToe("0X0", "00_", "000");
+        Assert.assertFalse(b1.getBoard().checkRows('0'));
+        Assert.assertTrue(b2.getBoard().checkRows('0'));
+        Assert.assertTrue(b3.getBoard().checkRows('0'));
+    }
+
+    @Test
+    public void checkRowsTest3() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0XX", "_0_", "0_X");
+        TicTacToe b2 = new TicTacToe("__X", "00_", "0_X");
+        TicTacToe b3 = new TicTacToe("XXX", "00_", "00X");
+        Assert.assertFalse(b1.getBoard().checkRows('0'));
+        Assert.assertFalse(b2.getBoard().checkRows('0'));
+        Assert.assertTrue(b3.getBoard().checkRows('X'));
+    }
+
+    @Test
+    public void checkColumnsTest() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0_X", "___", "0_X");
+        TicTacToe b2 = new TicTacToe("000", "0X_", "0_X");
+        TicTacToe b3 = new TicTacToe("0X0", "0X_", "000");
+        Assert.assertFalse(b1.getBoard().checkColumns('0'));
+        Assert.assertTrue(b2.getBoard().checkColumns('0'));
+        Assert.assertTrue(b3.getBoard().checkColumns('0'));
+    }
+
+    @Test
+    public void checkColumnsTest2() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0_X", "___", "0_X");
+        TicTacToe b2 = new TicTacToe("000", "0__", "0_X");
+        TicTacToe b3 = new TicTacToe("0X0", "X0_", "000");
+        Assert.assertFalse(b1.getBoard().checkColumns('0'));
+        Assert.assertTrue(b2.getBoard().checkColumns('0'));
+        Assert.assertFalse(b3.getBoard().checkColumns('0'));
+    }
+
+    @Test
+    public void checkColumnsTest3() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0XX", "_0_", "0_X");
+        TicTacToe b2 = new TicTacToe("__X", "00_", "0_X");
+        TicTacToe b3 = new TicTacToe("XX0", "0X_", "0X0");
+        Assert.assertFalse(b1.getBoard().checkColumns('0'));
+        Assert.assertFalse(b2.getBoard().checkColumns('0'));
+        Assert.assertTrue(b3.getBoard().checkColumns('X'));
+    }
+
+    @Test
+    public void checkDiagsTest() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0_X", "0__", "0_X");
+        TicTacToe b2 = new TicTacToe("000", "0X_", "0_X");
+        TicTacToe b3 = new TicTacToe("0X0", "0X_", "000");
+        Assert.assertFalse(b1.getBoard().checkDiagonals('0'));
+        Assert.assertFalse(b2.getBoard().checkDiagonals('0'));
+        Assert.assertFalse(b3.getBoard().checkDiagonals('0'));
+    }
+
+    @Test
+    public void checkDiagsTest2() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0_X", "___", "0_X");
+        TicTacToe b2 = new TicTacToe("000", "0__", "0_X");
+        TicTacToe b3 = new TicTacToe("0X0", "00_", "000");
+        Assert.assertFalse(b1.getBoard().checkDiagonals('0'));
+        Assert.assertFalse(b2.getBoard().checkDiagonals('0'));
+        Assert.assertTrue(b3.getBoard().checkDiagonals('0'));
+    }
+
+    @Test
+    public void checkDiagsTest3() throws TicTacToeException {
+        TicTacToe b1 = new TicTacToe("0XX", "_0_", "0_X");
+        TicTacToe b2 = new TicTacToe("__X", "00_", "0_X");
+        TicTacToe b3 = new TicTacToe("XX0", "00_", "000");
+        Assert.assertFalse(b1.getBoard().checkDiagonals('0'));
+        Assert.assertFalse(b2.getBoard().checkDiagonals('0'));
+        Assert.assertTrue(b3.getBoard().checkDiagonals('0'));
+    }
 
     @Test
     public void testEquals1() throws BoardException {

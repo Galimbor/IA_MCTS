@@ -41,15 +41,6 @@ public class Point {
     }
 
     /***
-     * Getter for the y
-     *
-     * @return int : y coordinate
-     */
-    public int getY() {
-        return y;
-    }
-
-    /***
      * Setter for the x
      *
      * @param x The X coordinate of the Point
@@ -57,6 +48,15 @@ public class Point {
      */
     public void setX(int x) {
         this.x = x;
+    }
+
+    /***
+     * Getter for the y
+     *
+     * @return int : y coordinate
+     */
+    public int getY() {
+        return y;
     }
 
     /***
@@ -76,14 +76,14 @@ public class Point {
      */
     @Override
     public String toString() {
-        return "Coordinate{" +
+        return "Point{" +
                 "x=" + x +
                 ", y=" + y +
                 '}';
     }
 
     /**
-     * Verifies if an object is a Point and if so, then verifies if two coordinates are equal
+     * Verifies if an object is a Point and if so, then verifies if the two coordinates are equal
      *
      * @param o other object to be compared
      * @return boolean : true if equals, false if not equals

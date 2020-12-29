@@ -32,8 +32,8 @@ class MCTS {
      * @param rolloutPolicy class object that implements the IRolloutPolicy Interface
      */
     public MCTS(ITreePolicy treePolicy, IRolloutPolicy rolloutPolicy) {
-        this.treePolicy = treePolicy;
-        this.rolloutPolicy = rolloutPolicy;
+        setTreePolicy(treePolicy);
+        setRolloutPolicy(rolloutPolicy);
     }
 
 
@@ -101,20 +101,41 @@ class MCTS {
 
 
     /***
-     * Sucessores will create and return a list that contains all the possibles layouts given a state n.
+     * Sucessors will create and return a list that contains all the possibles layouts given a state n.
      *
      * @param n - state that will be used to get its children.
      * @return list of states.
-     *  @throws CloneNotSupportedException if the clone method in class of the object has been called to clone an object,
+     * @throws CloneNotSupportedException if the clone method in class of the object has been called to clone an object,
      *  but the object's class does not implement the Cloneable interface.
-     *  @pre true
-     *  @post list of states of the successors of the given state
+     * @pre true
+     * @post list of states of the successors of the given state
      */
-    public List<State> sucessores(State n) throws CloneNotSupportedException {
+    public List<State> sucessors(State n) throws CloneNotSupportedException {
         List<State> sucs = new ArrayList<>();
         List<IBoardGame> children = n.game.children();
         for (IBoardGame e : children) {
             State nn = new State(e, n);
+            sucs.add(nn);
+        }
+        return sucs;
+    }
+
+    /***
+     * Sucessors_temp will create and return a list that contains all the possibles games given a state n but without
+     * father set to null, making them temporary.
+     *
+     * @param n - state that will be used to get its children.
+     * @return list of states.
+     * @throws CloneNotSupportedException if the clone method in class of the object has been called to clone an object,
+     *  but the object's class does not implement the Cloneable interface.
+     * @pre true
+     * @post list of states of the successors of the given state
+     */
+    public List<State> sucessors_temp(State n) throws CloneNotSupportedException {
+        List<State> sucs = new ArrayList<>();
+        List<IBoardGame> children = n.game.children();
+        for (IBoardGame e : children) {
+            State nn = new State(e, null);
             sucs.add(nn);
         }
         return sucs;
@@ -144,7 +165,7 @@ class MCTS {
      * but the object's class does not implement the Cloneable interface.
      */
     public void expansion(State node) throws CloneNotSupportedException {
-        node.setChildArray(sucessores(node));
+        node.setChildArray(sucessors(node));
     }
 
 
@@ -162,9 +183,8 @@ class MCTS {
     public double simulation(State node) throws CloneNotSupportedException {
         double result = 0;
 
-        int depth = 1; //initial depth
+        int depth = 1;
         State tempNode = node;
-        //Upper depth
         while (tempNode.father != null) {
             depth++;
             tempNode = tempNode.father;
@@ -176,17 +196,18 @@ class MCTS {
             node.father.setWinCount(-9999);
         }
         while (tempNode.getGame().getStatus().equals("in progress")) {
-            depth++; //bottom depth
+            depth++;
+
 //            One of the big reasons i'll be creating separate interfaces has to do with this..
 //            Random uniform receives List<State> instead of a State. I can't set their childArray otherwise it
 //            will stay saved in memory..
-            tempNode = this.rolloutPolicy.select(sucessores(tempNode));
+
+            tempNode = this.rolloutPolicy.select(sucessors_temp(tempNode));
             tempNode.setFather(null);
         }
         status = tempNode.getGame().getStatus();
         if (status.equals(String.valueOf(iAPlayer))) {
             result = 1 + 1.0 / depth;
-
         } else if ((!status.equals("draw") && !status.equals("in progress")) && !status.equals(String.valueOf(iAPlayer))) {
             result = -1;
         }
@@ -239,13 +260,12 @@ class MCTS {
      * @post returns the best next move if no Exceptions are thrown
      */
     final public State bestNextMove(IBoardGame s) throws CloneNotSupportedException, MCTSException {
-        this.iAPlayer = s.getCurrentPlayer();
+        this.setiAPlayer(s.getCurrentPlayer());
         long start = System.currentTimeMillis();
         long end = start + 25;
         State root = new State(s, null);
 
         while (System.currentTimeMillis() < end) {
-            // The current node about to me explored?
             State actual = selection(root);
             double simulation_result;
             if (actual.getGame().getStatus().equals("in progress")) {
@@ -271,7 +291,6 @@ class MCTS {
             throw new MCTSException("It is not possible to make a next move");
         }
     }
-
 
 
     /************************ | State Class | *************************

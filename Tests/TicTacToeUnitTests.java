@@ -282,22 +282,6 @@ public class TicTacToeUnitTests {
         TicTacToe bdchild2 = new TicTacToe(child2);
         bdchild2.setOpeningPiece('X');
 
-        char[][] child3 = {
-                {'_', '_', 'X'},
-                {'_', '_', '_'},
-                {'_', '_', '_'}
-        };
-        TicTacToe bdchild3 = new TicTacToe(child3);
-        bdchild3.setOpeningPiece('X');
-
-        char[][] child4 = {
-                {'_', '_', '_'},
-                {'X', '_', '_'},
-                {'_', '_', '_'}
-        };
-        TicTacToe bdchild4 = new TicTacToe(child4);
-        bdchild4.setOpeningPiece('X');
-
         char[][] child5 = {
                 {'_', '_', '_'},
                 {'_', 'X', '_'},
@@ -306,49 +290,10 @@ public class TicTacToeUnitTests {
         TicTacToe bdchild5 = new TicTacToe(child5);
         bdchild5.setOpeningPiece('X');
 
-        char[][] child6 = {
-                {'_', '_', '_'},
-                {'_', '_', 'X'},
-                {'_', '_', '_'}
-        };
-        TicTacToe bdchild6 = new TicTacToe(child6);
-        bdchild6.setOpeningPiece('X');
-
-        char[][] child7 = {
-                {'_', '_', '_'},
-                {'_', '_', '_'},
-                {'X', '_', '_'}
-        };
-        TicTacToe bdchild7 = new TicTacToe(child7);
-        bdchild7.setOpeningPiece('X');
-
-        char[][] child8 = {
-                {'_', '_', '_'},
-                {'_', '_', '_'},
-                {'_', 'X', '_'}
-        };
-        TicTacToe bdchild8 = new TicTacToe(child8);
-        bdchild8.setOpeningPiece('X');
-
-        char[][] child9 = {
-                {'_', '_', '_'},
-                {'_', '_', '_'},
-                {'_', '_', 'X'}
-        };
-        TicTacToe bdchild9 = new TicTacToe(child9);
-        bdchild9.setOpeningPiece('X');
-
         List<IBoardGame> expected = new ArrayList<>();
         expected.add(bdchild1);
         expected.add(bdchild2);
-        expected.add(bdchild3);
-        expected.add(bdchild4);
         expected.add(bdchild5);
-        expected.add(bdchild6);
-        expected.add(bdchild7);
-        expected.add(bdchild8);
-        expected.add(bdchild9);
-
 
         List<IBoardGame> obtained = bd.children();
 
@@ -501,97 +446,6 @@ public class TicTacToeUnitTests {
         Assert.assertEquals(bd.clone(), bd.clone());
     }
 
-    @Test
-    public void checkRowsTest() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0_X",
-                "0__",
-                "0_X");
-        TicTacToe b2 = new TicTacToe("000", "0X_", "0_X");
-        TicTacToe b3 = new TicTacToe("0X0", "0X_", "000");
-        Assert.assertFalse(b1.checkRows('0'));
-        Assert.assertTrue(b2.checkRows('0'));
-        Assert.assertTrue(b3.checkRows('0'));
-    }
-
-    @Test
-    public void checkRowsTest2() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0_X", "___", "0_X");
-        TicTacToe b2 = new TicTacToe("000", "0__", "0_X");
-        TicTacToe b3 = new TicTacToe("0X0", "00_", "000");
-        Assert.assertFalse(b1.checkRows('0'));
-        Assert.assertTrue(b2.checkRows('0'));
-        Assert.assertTrue(b3.checkRows('0'));
-    }
-
-    @Test
-    public void checkRowsTest3() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0XX", "_0_", "0_X");
-        TicTacToe b2 = new TicTacToe("__X", "00_", "0_X");
-        TicTacToe b3 = new TicTacToe("XXX", "00_", "00X");
-        Assert.assertFalse(b1.checkRows('0'));
-        Assert.assertFalse(b2.checkRows('0'));
-        Assert.assertTrue(b3.checkRows('X'));
-    }
-
-    @Test
-    public void checkColumnsTest() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0_X", "___", "0_X");
-        TicTacToe b2 = new TicTacToe("000", "0X_", "0_X");
-        TicTacToe b3 = new TicTacToe("0X0", "0X_", "000");
-        Assert.assertFalse(b1.checkColumns('0'));
-        Assert.assertTrue(b2.checkColumns('0'));
-        Assert.assertTrue(b3.checkColumns('0'));
-    }
-
-    @Test
-    public void checkColumnsTest2() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0_X", "___", "0_X");
-        TicTacToe b2 = new TicTacToe("000", "0__", "0_X");
-        TicTacToe b3 = new TicTacToe("0X0", "X0_", "000");
-        Assert.assertFalse(b1.checkColumns('0'));
-        Assert.assertTrue(b2.checkColumns('0'));
-        Assert.assertFalse(b3.checkColumns('0'));
-    }
-
-    @Test
-    public void checkColumnsTest3() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0XX", "_0_", "0_X");
-        TicTacToe b2 = new TicTacToe("__X", "00_", "0_X");
-        TicTacToe b3 = new TicTacToe("XX0", "0X_", "0X0");
-        Assert.assertFalse(b1.checkColumns('0'));
-        Assert.assertFalse(b2.checkColumns('0'));
-        Assert.assertTrue(b3.checkColumns('X'));
-    }
-
-    @Test
-    public void checkDiagsTest() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0_X", "0__", "0_X");
-        TicTacToe b2 = new TicTacToe("000", "0X_", "0_X");
-        TicTacToe b3 = new TicTacToe("0X0", "0X_", "000");
-        Assert.assertFalse(b1.checkDiagonals('0'));
-        Assert.assertFalse(b2.checkDiagonals('0'));
-        Assert.assertFalse(b3.checkDiagonals('0'));
-    }
-
-    @Test
-    public void checkDiagsTest2() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0_X", "___", "0_X");
-        TicTacToe b2 = new TicTacToe("000", "0__", "0_X");
-        TicTacToe b3 = new TicTacToe("0X0", "00_", "000");
-        Assert.assertFalse(b1.checkDiagonals('0'));
-        Assert.assertFalse(b2.checkDiagonals('0'));
-        Assert.assertTrue(b3.checkDiagonals('0'));
-    }
-
-    @Test
-    public void checkDiagsTest3() throws TicTacToeException {
-        TicTacToe b1 = new TicTacToe("0XX", "_0_", "0_X");
-        TicTacToe b2 = new TicTacToe("__X", "00_", "0_X");
-        TicTacToe b3 = new TicTacToe("XX0", "00_", "000");
-        Assert.assertFalse(b1.checkDiagonals('0'));
-        Assert.assertFalse(b2.checkDiagonals('0'));
-        Assert.assertTrue(b3.checkDiagonals('0'));
-    }
 
 
     @Test
@@ -803,6 +657,4 @@ public class TicTacToeUnitTests {
         Assert.assertEquals(5, board1.getH());
 
     }
-
-
 }

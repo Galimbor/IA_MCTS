@@ -36,6 +36,22 @@ public class Board implements Cloneable {
         fillBoardWithChar(filler);
     }
 
+
+    /**
+     * Constructor where a bidimensional char array is passed as an argument, creating a Board object.
+     *
+     * @param board bidimensional char array
+     * @throws BoardException if setNumberRows or setNumberColumns get parameters <= 0
+     * @pos new Object of Board, this.numberRows = board.length and this.numberColumns = board[0].length and
+     * board equals to the board given as argument
+     */
+    public Board(char[][] board) throws BoardException {
+        setNumberRows(board.length);
+        setNumberColumns(board[0].length);
+        setBoard(this.board = board);
+    }
+
+
     /**
      * TESTS-ONLY
      * Create a new board given the rows
@@ -56,9 +72,9 @@ public class Board implements Cloneable {
         setNumberColumns(dimension);
 
         if (row1Splitted.length == row2Splitted.length && row2Splitted.length == row3Splitted.length) {
-            //New board
             board = new char[this.numberRows][this.numberColumns];
             int result = 0;
+
             //Fill the first row
             for (int i = result; i < this.numberColumns; i++) {
                 board[0][i] = row1Splitted[i].charAt(0);
@@ -77,19 +93,7 @@ public class Board implements Cloneable {
 
     }
 
-    /**
-     * Constructor where a bidimensional char array is passed as an argument, creating a Board object.
-     *
-     * @param board bidimensional char array
-     * @throws BoardException if setNumberRows or setNumberColumns get parameters <= 0
-     * @pos new Object of Board, this.numberRows = board.length and this.numberColumns = board[0].length and
-     * board equals to the board given as argument
-     */
-    public Board(char[][] board) throws BoardException {
-        setNumberRows(board.length);
-        setNumberColumns(board[0].length);
-        setBoard(this.board = board);
-    }
+
 
     /***
      * Getter for numberRows field
@@ -236,10 +240,84 @@ public class Board implements Cloneable {
      * @param openSquareChar char that represents an empty square
      * @return boolean : true if position is available, false if position is not empty
      */
-    public boolean isPositionAvailable(Point p, char openSquareChar) {
+    public boolean isPositionAvailable(Point p, char openSquareChar) throws BoardException {
         boolean result = false;
-        if (this.board[p.getX()][p.getY()] == openSquareChar)
+        if (isValidPoint(p) && this.board[p.getX()][p.getY()] == openSquareChar)
             result = true;
+        return result;
+    }
+
+
+    /***
+     * Checks if there is a row of the board that is filled with a given piece
+     * @param piece char
+     * @return boolean : true if there is a row in the board filled with the given piece, false if there is not
+     */
+    public boolean checkRows(char piece) {
+        boolean result = false;
+        for (int i = 0; i < numberRows; i++) {
+            int j = 0;
+            int counter = 0;
+            while (j < numberColumns && this.board[i][j] == piece) {
+                counter++;
+                j++;
+                if (counter == numberRows)
+                    result = true;
+            }
+        }
+        return result;
+    }
+
+    /***
+     * Checks if there is a column of the board that is filled with a given piece
+     * @param piece char
+     * @return boolean : true if there is a column in the board filled with the given piece, false if there is not
+     */
+    public boolean checkColumns(char piece) {
+        boolean result = false;
+        for (int j = 0; j < numberColumns; j++) {
+            int i = 0;
+            int counter = 0;
+            while (i < numberRows && this.board[i][j] == piece) {
+                counter++;
+                i++;
+                if (counter == numberColumns)
+                    result = true;
+            }
+        }
+        return result;
+    }
+
+    /***
+     * Checks if any of both diagonals of the board is filled with a given piece
+     * @param piece char
+     * @return boolean : true if there is a diagonal in the board filled with the given piece, false if there is not
+     */
+    public boolean checkDiagonals(char piece) {
+        boolean result = false;
+        int j = 0;
+        int counter = 0;
+
+        // diagonal \
+        while (j < numberColumns && this.board[j][j] == piece) {
+            counter++;
+            j++;
+            if (counter == numberRows)
+                result = true;
+        }
+        j = 0;
+        int i = numberRows - 1;
+
+        counter = 0;
+        // diagonal /
+        while (j < numberColumns && i >= 0 && this.board[i][j] == piece) {
+            counter++;
+            j++;
+            i--;
+            if (counter == numberColumns)
+                result = true;
+        }
+
         return result;
     }
 

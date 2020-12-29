@@ -1,4 +1,3 @@
-
 /**
  * Exception for the TicTacToe class in case violates the contract made by TicTacToe.
  */

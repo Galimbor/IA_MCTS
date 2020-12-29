@@ -15,10 +15,10 @@ public interface IBoardGame {
 
 
     /***
-     * Gets a list of Coordinate objects that represents the empty positions
+     * Gets a list of Point objects that represents the empty positions
      * in the board game.
      *
-     * @return List<Coordinate> : the empty positions
+     * @return List<Point> : the empty positions
      */
     List<Point> getEmptyPositions();
 

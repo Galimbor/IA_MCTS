@@ -8,7 +8,6 @@ import java.util.Random;
  */
 public class RandomUniform implements IRolloutPolicy {
 
-
     /***
      * Selects a random MCTS State object from a List of MCTS State objects
      *
