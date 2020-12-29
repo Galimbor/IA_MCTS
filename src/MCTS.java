@@ -160,14 +160,23 @@ class MCTS {
      * but the object's class does not implement the Cloneable interface.
      */
     public double simulation(State node) throws CloneNotSupportedException {
-        int result = 0;
+        double result = 0;
 
+        int depth = 1; //initial depth
         State tempNode = node;
+        //Upper depth
+        while (tempNode.father != null) {
+            depth++;
+            tempNode = tempNode.father;
+        }
+
+        tempNode = node;
         String status = tempNode.getGame().getStatus();
         if ((!status.equals("in progress") && !status.equals("draw")) && iAPlayer == tempNode.getGame().getCurrentPlayer()) {
             node.father.setWinCount(-9999);
         }
         while (tempNode.getGame().getStatus().equals("in progress")) {
+            depth++; //bottom depth
 //            One of the big reasons i'll be creating separate interfaces has to do with this..
 //            Random uniform receives List<State> instead of a State. I can't set their childArray otherwise it
 //            will stay saved in memory..
@@ -176,10 +185,8 @@ class MCTS {
         }
         status = tempNode.getGame().getStatus();
         if (status.equals(String.valueOf(iAPlayer))) {
-            while (tempNode.father != null) {
-                tempNode = tempNode.father;
-            }
-            result = 1;
+            result = 1 + 1.0 / depth;
+
         } else if ((!status.equals("draw") && !status.equals("in progress")) && !status.equals(String.valueOf(iAPlayer))) {
             result = -1;
         }

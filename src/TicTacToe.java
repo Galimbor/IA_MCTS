@@ -103,7 +103,7 @@ public class TicTacToe implements IBoardGame, Cloneable {
      * Determines who's the next player to make a move, according to the current TicTacToe, and sets the object variable.
      */
     //Melhorar um bcd esta
-    private void setCurrentPlayer() {
+    public void setCurrentPlayer() {
         int playerXmoves = 0;
         int player0moves = 0;
         for (int i = 0; i < dim; i++) {
@@ -362,7 +362,7 @@ public class TicTacToe implements IBoardGame, Cloneable {
      THIS BELONGS TO THE HEURISTICS
      /*************************************/
 
-    private int checkOpenDiag(char piece) {
+    public int checkOpenDiag(char piece) {
         int result = 0;
         int j = 0;
         int counter = 0;

@@ -11,7 +11,7 @@ import java.util.Comparator;
 public class UCT implements ITreePolicy {
 
 
-    private final static double c = Math.sqrt(2);
+    private final static double c = 0.6;
 
     /***
      * Calculate the UCT value for the given MCTS state
