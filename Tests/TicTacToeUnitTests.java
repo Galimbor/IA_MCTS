@@ -447,7 +447,6 @@ public class TicTacToeUnitTests {
     }
 
 
-
     @Test
     public void testGetStatus() throws TicTacToeException {
         TicTacToe board1 = new TicTacToe("00_", "XX0", "0X_");
@@ -621,7 +620,7 @@ public class TicTacToeUnitTests {
                 "0X0",
                 "___");
         board1.setOpeningPiece('0');
-        Assert.assertEquals(2, board1.getH());
+        Assert.assertEquals(0, board1.getH());
 
     }
 
@@ -632,7 +631,7 @@ public class TicTacToeUnitTests {
                 "0_0",
                 "_X_");
         board1.setOpeningPiece('0');
-        Assert.assertEquals(0, board1.getH());
+        Assert.assertEquals(-3, board1.getH());
 
     }
 
@@ -655,6 +654,58 @@ public class TicTacToeUnitTests {
                 "_0X");
         board1.setOpeningPiece('X');
         Assert.assertEquals(5, board1.getH());
+
+    }
+
+    @Test
+    public void mctsTestH5() throws TicTacToeException {
+        TicTacToe board1 = new TicTacToe(
+                "0X_",
+                "_0_",
+                "___");
+        TicTacToe board2 = new TicTacToe(
+                "0X_",
+                "___",
+                "__0");
+        board1.setOpeningPiece('0');
+        board2.setOpeningPiece('0');
+        Assert.assertEquals(4, board1.getH());
+        Assert.assertEquals(3, board2.getH());
+
+    }
+
+
+    @Test
+    public void mctsTestH6() throws TicTacToeException {
+        TicTacToe board1 = new TicTacToe(
+                "0X_",
+                "_0_",
+                "X__");
+        TicTacToe board2 = new TicTacToe(
+                "0X_",
+                "_0_",
+                "__X");
+        board1.setOpeningPiece('0');
+        board2.setOpeningPiece('0');
+        Assert.assertEquals(-3, board1.getH());
+        Assert.assertEquals(-2, board2.getH());
+
+    }
+
+    @Test
+    public void mctsTestH7() throws TicTacToeException {
+        TicTacToe board1 = new TicTacToe(
+                "0X_",
+                "_0X",
+                "__0");
+        TicTacToe board2 = new TicTacToe(
+                "0X0",
+                "_0X",
+                "___");
+        board1.setOpeningPiece('0');
+        board2.setOpeningPiece('0');
+        Assert.assertEquals(3, board1.getH());
+        Assert.assertEquals(3, board2.getH());
 
     }
 }

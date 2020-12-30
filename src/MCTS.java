@@ -197,20 +197,17 @@ class MCTS {
         }
         while (tempNode.getGame().getStatus().equals("in progress")) {
             depth++;
-
-//            One of the big reasons i'll be creating separate interfaces has to do with this..
-//            Random uniform receives List<State> instead of a State. I can't set their childArray otherwise it
-//            will stay saved in memory..
-
             tempNode = this.rolloutPolicy.select(sucessors_temp(tempNode));
             tempNode.setFather(null);
         }
+
         status = tempNode.getGame().getStatus();
         if (status.equals(String.valueOf(iAPlayer))) {
             result = 1 + 1.0 / depth;
         } else if ((!status.equals("draw") && !status.equals("in progress")) && !status.equals(String.valueOf(iAPlayer))) {
             result = -1;
         }
+
         return result;
     }
 
@@ -222,7 +219,7 @@ class MCTS {
      * @param node State where the backpropagation will start
      * @param score double that holds the value given by simulation
      */
-    public void backpropagate(State node, double score) {
+    public void backPropagate(State node, double score) {
 
         while (node.father != null) {
             if (node.getGame().getCurrentPlayer() != iAPlayer) {
@@ -262,7 +259,7 @@ class MCTS {
     final public State bestNextMove(IBoardGame s) throws CloneNotSupportedException, MCTSException {
         this.setiAPlayer(s.getCurrentPlayer());
         long start = System.currentTimeMillis();
-        long end = start + 25;
+        long end = start + 2000;
         State root = new State(s, null);
 
         while (System.currentTimeMillis() < end) {
@@ -275,14 +272,14 @@ class MCTS {
                 actual = this.rolloutPolicy.select(actual.getChildArray());
             }
             simulation_result = simulation(actual);
-            backpropagate(actual, simulation_result);
+            backPropagate(actual, simulation_result);
         }
 //        for (State node : root.getChildArray()
 //        ) {
 //            System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 //            System.out.println(node.getVisitCount());
 //            System.out.println(node.getWinCount());
-//            System.out.println(node + "with player " + node.getLayout().getCurrentPlayer() + " playing, has value of " + UCT.computeUCT(1, node.getWinCount(), node.getVisitCount()) + " and win count = " + node.getWinCount());
+//            System.out.println(node + "with player " + node.getGame().getCurrentPlayer() + " playing, has value of " + UCT.calculateUCT(1, node.getWinCount(), node.getVisitCount()) + " and win count = " + node.getWinCount());
 //            System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
 //        }
         if (root.getChildArray().size() > 0)

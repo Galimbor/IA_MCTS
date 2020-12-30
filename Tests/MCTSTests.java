@@ -58,7 +58,10 @@ public class MCTSTests {
         IRolloutPolicy rolloutPolicy = new SpecialHeuristic();
         MCTS s = new MCTS(treePolicy, rolloutPolicy);
 
-        TicTacToe board1 = new TicTacToe("0X_", "___", "___");
+        TicTacToe board1 = new TicTacToe
+                ("0X_",
+                        "___",
+                        "___");
         board1.setOpeningPiece('0');
         MCTS.State s0 = new MCTS.State(board1, null);
 
@@ -216,15 +219,21 @@ public class MCTSTests {
         IRolloutPolicy rolloutPolicy = new SpecialHeuristic();
         MCTS s = new MCTS(treePolicy, rolloutPolicy);
 
-        TicTacToe board1 = new TicTacToe("0X_", "_0_", "_XX");
-        board1.setOpeningPiece('0');
+        TicTacToe board1 = new TicTacToe
+                ("0X_",
+                        "_0_",
+                        "_XX");
+        board1.setOpeningPiece('X');
         MCTS.State s0 = new MCTS.State(board1, null);
 
         MCTS.State obtained = s.bestNextMove(s0.getGame());
 
 
-        TicTacToe board2 = new TicTacToe("0X0", "_0_", "_XX");
-        board2.setOpeningPiece('0');
+        TicTacToe board2 = new TicTacToe
+                ("0X_",
+                        "_0_",
+                        "0XX");
+        board2.setOpeningPiece('X');
         MCTS.State expected = new MCTS.State(board2, null);
 
 

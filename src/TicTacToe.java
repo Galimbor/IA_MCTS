@@ -59,8 +59,6 @@ public class TicTacToe implements IBoardGame, Cloneable {
     }
 
 
-
-
     /**
      * TESTS-ONLY
      * Create a new board given the rows of the game
@@ -450,6 +448,107 @@ public class TicTacToe implements IBoardGame, Cloneable {
         return result;
     }
 
+    /***
+     * Checks all rows of the board if it is possible to win from a certain row and increments the result
+     * if there is a row open with 2 pieces, meaning that a victory for this player will happen in the next
+     * move
+     * @param piece char
+     * @return the number of rows still open to win with the piece given
+     */
+    public int checkOpenRowsOpponent(char piece) {
+        int result = 0;
+        int pieceCounter = 0;
+        for (int i = 0; i < DIM; i++) {
+            int j = 0;
+            int counter = 0;
+            while (j < DIM && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == EMPTY_FILLER)) {
+                if (this.board.getBoard()[i][j] == piece)
+                    pieceCounter++;
+                counter++;
+                j++;
+                if (counter == 3) {
+                    if (pieceCounter == 2)
+                        result++;
+                    result++;
+                }
+            }
+        }
+        return result;
+    }
+
+
+    /***
+     * Checks all columns of the board if it is possible to win from a certain column and increments the result
+     * if there is a column open with 2 pieces, meaning that a victory for this player will happen in the next
+     * move
+     * @param piece char
+     * @return the number of columns still open to win with the piece given
+     */
+    public int checkOpenColumnsOpponent(char piece) {
+        int result = 0;
+        int pieceCounter = 0;
+        for (int j = 0; j < DIM; j++) {
+            int i = 0;
+            int counter = 0;
+            while (i < DIM && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == EMPTY_FILLER)) {
+                if (this.board.getBoard()[i][j] == piece)
+                    pieceCounter++;
+                counter++;
+                i++;
+                if (counter == 3)
+                    result++;
+                if (pieceCounter == 2)
+                    result++;
+            }
+        }
+        return result;
+    }
+
+
+    /***
+     * Checks both diagonals of the game board if it is possible to win from that diagonal and increments the
+     * result if there is a diagonal open with 2 pieces, meaning that a victory for this player will happen in the next
+     * move
+     * @param piece char
+     * @return the number of diagonals still open to win with the piece given
+     */
+    public int checkOpenDiagOpponent(char piece) {
+        int result = 0;
+        int j = 0;
+        int counter = 0;
+        int pieceCounter = 0;
+        while (j < DIM && (this.board.getBoard()[j][j] == piece || this.board.getBoard()[j][j] == EMPTY_FILLER)) {
+            if (this.board.getBoard()[j][j] == piece)
+                pieceCounter++;
+            counter++;
+            j++;
+            if (counter == 3) {
+                result++;
+                if (pieceCounter == 2)
+                    result++;
+            }
+        }
+
+        j = 0;
+        int i = DIM - 1;
+        counter = 0;
+        pieceCounter = 0;
+        while (j < DIM && i >= 0 && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == EMPTY_FILLER)) {
+            if (this.board.getBoard()[i][j] == piece) {
+                pieceCounter++;
+            }
+            counter++;
+            j++;
+            i--;
+            if (counter == 3) {
+                result++;
+                if (pieceCounter == 2)
+                    result++;
+            }
+        }
+
+        return result;
+    }
 
     /***
      * Sums the total number of open rows, columns and diagonals and returns the sum.
@@ -462,6 +561,14 @@ public class TicTacToe implements IBoardGame, Cloneable {
         result += checkOpenRows(piece);
         result += checkOpenColumns(piece);
         result += checkOpenDiag(piece);
+        return result;
+    }
+
+    public int checkOpeningsOpponent(char piece) {
+        int result = 0;
+        result += checkOpenRowsOpponent(piece);
+        result += checkOpenColumnsOpponent(piece);
+        result += checkOpenDiagOpponent(piece);
         return result;
     }
 
@@ -481,9 +588,9 @@ public class TicTacToe implements IBoardGame, Cloneable {
         char lastPlayer = getCurrentPlayer() == 'X' ? 'Y' : 'X';
 
         if (lastPlayer == 'X') {
-            result = checkOpenings('X') - checkOpenings('0');
+            result = checkOpenings('X') - checkOpeningsOpponent('0');
         } else {
-            result = checkOpenings('0') - checkOpenings('X');
+            result = checkOpenings('0') - checkOpeningsOpponent('X');
         }
 
         return result;

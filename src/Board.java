@@ -94,7 +94,6 @@ public class Board implements Cloneable {
     }
 
 
-
     /***
      * Getter for numberRows field
      *

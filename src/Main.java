@@ -11,30 +11,36 @@ public class Main {
         MCTS s = new MCTS(treePolicy, rolloutPolicy);
 
         System.out.println("With which piece would you like to start the game? 0 or X?");
-        char openingPiece = sc.next().charAt(0);
-        TicTacToe startingboard = new TicTacToe(openingPiece);
+        char openingPiece = Character.toUpperCase(sc.next().charAt(0));
+        try {
+            TicTacToe startingboard = new TicTacToe(openingPiece);
 
-        while (startingboard.getStatus().equals("in progress")) {
-            System.out.println(startingboard);
-            Point c = selectMove(sc);
-            try {
-                startingboard.placeMove(c, openingPiece);
-            } catch (TicTacToeException tttE) {
-                System.out.println(tttE.toString());
-                System.exit(0);
-            }
+
+            while (startingboard.getStatus().equals("in progress")) {
+                System.out.println(startingboard);
+                Point c = selectMove(sc);
+                try {
+                    startingboard.placeMove(c, openingPiece);
+                } catch (TicTacToeException tttE) {
+                    System.out.println(tttE.toString());
+                    System.exit(0);
+                }
 //            while (!startingboard.placeMove(c, openingPiece)) {
 //                c = selectMove(sc);
 //            }
 
-            System.out.println(startingboard);
-            System.out.println("Opponent is choosing its next move, please wait...");
-            if (startingboard.getStatus().equals("in progress")) {
-                startingboard = (TicTacToe) s.bestNextMove(startingboard).getGame();
+                System.out.println(startingboard);
+                System.out.println("Opponent is choosing its next move, please wait...");
+                if (startingboard.getStatus().equals("in progress")) {
+                    startingboard = (TicTacToe) s.bestNextMove(startingboard).getGame();
+                }
             }
+            System.out.println(startingboard);
+            System.out.println("Game over: " + startingboard.getStatus());
+        } catch (TicTacToeException tttE) {
+            System.out.println(tttE.toString());
+            System.exit(0);
         }
-        System.out.println(startingboard);
-        System.out.println("Game over: " + startingboard.getStatus());
 //        iaPlaysFirst(startingboard,sc,s);
     }
 
