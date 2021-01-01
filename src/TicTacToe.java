@@ -386,16 +386,26 @@ public class TicTacToe implements IBoardGame, Cloneable {
         int result = 0;
         int j = 0;
         int counter = 0;
+        int pieceCounter = 0;
         while (j < DIM && (this.board.getBoard()[j][j] == piece || this.board.getBoard()[j][j] == EMPTY_FILLER)) {
+            if (this.board.getBoard()[j][j] == piece) {
+                pieceCounter++;
+            }
             counter++;
             j++;
             if (counter == 3)
                 result++;
         }
+        if (pieceCounter == 3)
+            result++;
         j = 0;
         int i = DIM - 1;
         counter = 0;
+        pieceCounter = 0;
         while (j < DIM && i >= 0 && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == EMPTY_FILLER)) {
+            if (this.board.getBoard()[i][j] == piece) {
+                pieceCounter++;
+            }
             counter++;
             j++;
             i--;
@@ -403,6 +413,8 @@ public class TicTacToe implements IBoardGame, Cloneable {
                 result++;
         }
 
+        if (pieceCounter == 3)
+            result++;
         return result;
     }
 
@@ -417,12 +429,17 @@ public class TicTacToe implements IBoardGame, Cloneable {
         for (int j = 0; j < DIM; j++) {
             int i = 0;
             int counter = 0;
+            int pieceCounter = 0;
             while (i < DIM && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == EMPTY_FILLER)) {
+                if (this.board.getBoard()[i][j] == piece)
+                    pieceCounter++;
                 counter++;
                 i++;
                 if (counter == 3)
                     result++;
             }
+            if (pieceCounter == 3)
+                result++;
         }
         return result;
     }
@@ -438,12 +455,18 @@ public class TicTacToe implements IBoardGame, Cloneable {
         for (int i = 0; i < DIM; i++) {
             int j = 0;
             int counter = 0;
+            int pieceCounter = 0;
             while (j < DIM && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == EMPTY_FILLER)) {
+                if (this.board.getBoard()[i][j] == piece) {
+                    pieceCounter++;
+                }
                 counter++;
                 j++;
                 if (counter == 3)
                     result++;
             }
+            if (pieceCounter == 3)
+                result++;
         }
         return result;
     }
@@ -564,6 +587,13 @@ public class TicTacToe implements IBoardGame, Cloneable {
         return result;
     }
 
+
+    /***
+     * Sums the total number of open rows, columns and diagonals and returns the sum.
+     *
+     * @param piece char
+     * @return int which represents the number of open rows, columns and diagonals of the TicTacToe board.
+     */
     public int checkOpeningsOpponent(char piece) {
         int result = 0;
         result += checkOpenRowsOpponent(piece);
@@ -584,7 +614,6 @@ public class TicTacToe implements IBoardGame, Cloneable {
     @Override
     public int getH() {
         int result;
-
         char lastPlayer = getCurrentPlayer() == 'X' ? 'Y' : 'X';
 
         if (lastPlayer == 'X') {
@@ -594,6 +623,5 @@ public class TicTacToe implements IBoardGame, Cloneable {
         }
 
         return result;
-
     }
 }

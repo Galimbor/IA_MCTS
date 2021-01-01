@@ -653,7 +653,7 @@ public class TicTacToeUnitTests {
                 "_X_",
                 "_0X");
         board1.setOpeningPiece('X');
-        Assert.assertEquals(5, board1.getH());
+        Assert.assertEquals(6, board1.getH());
 
     }
 
@@ -704,7 +704,7 @@ public class TicTacToeUnitTests {
                 "___");
         board1.setOpeningPiece('0');
         board2.setOpeningPiece('0');
-        Assert.assertEquals(3, board1.getH());
+        Assert.assertEquals(4, board1.getH());
         Assert.assertEquals(3, board2.getH());
 
     }

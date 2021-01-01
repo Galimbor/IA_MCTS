@@ -191,21 +191,18 @@ class MCTS {
         }
 
         tempNode = node;
-        String status = tempNode.getGame().getStatus();
-        if ((!status.equals("in progress") && !status.equals("draw")) && iAPlayer == tempNode.getGame().getCurrentPlayer()) {
-            node.father.setWinCount(-9999);
-        }
+
         while (tempNode.getGame().getStatus().equals("in progress")) {
             depth++;
             tempNode = this.rolloutPolicy.select(sucessors_temp(tempNode));
             tempNode.setFather(null);
         }
 
-        status = tempNode.getGame().getStatus();
+        String status = tempNode.getGame().getStatus();
         if (status.equals(String.valueOf(iAPlayer))) {
-            result = 1 + 1.0 / depth;
+            result = 1 + 1.0 / (depth);
         } else if ((!status.equals("draw") && !status.equals("in progress")) && !status.equals(String.valueOf(iAPlayer))) {
-            result = -1;
+            result = -1 - 1.0 /  (depth);
         }
 
         return result;
@@ -225,13 +222,20 @@ class MCTS {
             if (node.getGame().getCurrentPlayer() != iAPlayer) {
                 node.setWinCount(node.getWinCount() + score);
             }
+            else {
+                node.setWinCount(node.getWinCount() - score);
+            }
             node.setVisitCount(node.getVisitCount() + 1);
             node = node.father;
         }
         if (node.getGame().getCurrentPlayer() != iAPlayer) {
             node.setWinCount(node.getWinCount() + score);
         }
+        else {
+            node.setWinCount(node.getWinCount() - score);
+        }
         node.setVisitCount(node.getVisitCount() + 1);
+
     }
 
 
@@ -259,7 +263,7 @@ class MCTS {
     final public State bestNextMove(IBoardGame s) throws CloneNotSupportedException, MCTSException {
         this.setiAPlayer(s.getCurrentPlayer());
         long start = System.currentTimeMillis();
-        long end = start + 2000;
+        long end = start + 10;
         State root = new State(s, null);
 
         while (System.currentTimeMillis() < end) {
