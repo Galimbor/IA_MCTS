@@ -393,11 +393,12 @@ public class TicTacToe implements IBoardGame, Cloneable {
             }
             counter++;
             j++;
-            if (counter == 3)
+            if (counter == 3) {
+                if (pieceCounter == 3)
+                    return Integer.MAX_VALUE;
                 result++;
+            }
         }
-        if (pieceCounter == 3)
-            result++;
         j = 0;
         int i = DIM - 1;
         counter = 0;
@@ -409,12 +410,12 @@ public class TicTacToe implements IBoardGame, Cloneable {
             counter++;
             j++;
             i--;
-            if (counter == 3)
+            if (counter == 3) {
+                if (pieceCounter == 3)
+                    return Integer.MAX_VALUE;
                 result++;
+            }
         }
-
-        if (pieceCounter == 3)
-            result++;
         return result;
     }
 
@@ -435,11 +436,12 @@ public class TicTacToe implements IBoardGame, Cloneable {
                     pieceCounter++;
                 counter++;
                 i++;
-                if (counter == 3)
+                if (counter == 3) {
+                    if (pieceCounter == 3)
+                        return Integer.MAX_VALUE;
                     result++;
+                }
             }
-            if (pieceCounter == 3)
-                result++;
         }
         return result;
     }
@@ -462,11 +464,12 @@ public class TicTacToe implements IBoardGame, Cloneable {
                 }
                 counter++;
                 j++;
-                if (counter == 3)
+                if (counter == 3) {
+                    if (pieceCounter == 3)
+                        return Integer.MAX_VALUE;
                     result++;
+                }
             }
-            if (pieceCounter == 3)
-                result++;
         }
         return result;
     }
@@ -484,6 +487,7 @@ public class TicTacToe implements IBoardGame, Cloneable {
         for (int i = 0; i < DIM; i++) {
             int j = 0;
             int counter = 0;
+            pieceCounter = 0;
             while (j < DIM && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == EMPTY_FILLER)) {
                 if (this.board.getBoard()[i][j] == piece)
                     pieceCounter++;
@@ -492,9 +496,13 @@ public class TicTacToe implements IBoardGame, Cloneable {
                 if (counter == 3) {
                     if (pieceCounter == 2)
                         result++;
+                    else if (pieceCounter == 3)
+                        return Integer.MAX_VALUE;
                     result++;
                 }
+
             }
+
         }
         return result;
     }
@@ -513,16 +521,21 @@ public class TicTacToe implements IBoardGame, Cloneable {
         for (int j = 0; j < DIM; j++) {
             int i = 0;
             int counter = 0;
+            pieceCounter = 0;
             while (i < DIM && (this.board.getBoard()[i][j] == piece || this.board.getBoard()[i][j] == EMPTY_FILLER)) {
                 if (this.board.getBoard()[i][j] == piece)
                     pieceCounter++;
                 counter++;
                 i++;
-                if (counter == 3)
+                if (counter == 3) {
+                    if (pieceCounter == 2)
+                        result++;
+                    else if (pieceCounter == 3)
+                        return Integer.MAX_VALUE;
                     result++;
-                if (pieceCounter == 2)
-                    result++;
+                }
             }
+
         }
         return result;
     }
@@ -546,9 +559,11 @@ public class TicTacToe implements IBoardGame, Cloneable {
             counter++;
             j++;
             if (counter == 3) {
-                result++;
                 if (pieceCounter == 2)
                     result++;
+                else if (pieceCounter == 3)
+                    return Integer.MAX_VALUE;
+                result++;
             }
         }
 
@@ -564,9 +579,11 @@ public class TicTacToe implements IBoardGame, Cloneable {
             j++;
             i--;
             if (counter == 3) {
-                result++;
                 if (pieceCounter == 2)
                     result++;
+                else if (pieceCounter == 3)
+                    return Integer.MAX_VALUE;
+                result++;
             }
         }
 
@@ -581,9 +598,22 @@ public class TicTacToe implements IBoardGame, Cloneable {
      */
     public int checkOpenings(char piece) {
         int result = 0;
-        result += checkOpenRows(piece);
-        result += checkOpenColumns(piece);
-        result += checkOpenDiag(piece);
+
+        int tempValue = checkOpenRows(piece);
+        if (tempValue == Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//        System.out.println("Value of rows is " + tempValue);
+        result += tempValue;
+
+        tempValue = checkOpenColumns(piece);
+        if (tempValue == Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//        System.out.println("Value of columns is " + tempValue);
+        result += tempValue;
+
+        tempValue = checkOpenDiag(piece);
+        if (tempValue == Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//        System.out.println("Value of diags is " + tempValue);
+        result += tempValue;
+
         return result;
     }
 
@@ -596,9 +626,23 @@ public class TicTacToe implements IBoardGame, Cloneable {
      */
     public int checkOpeningsOpponent(char piece) {
         int result = 0;
-        result += checkOpenRowsOpponent(piece);
-        result += checkOpenColumnsOpponent(piece);
-        result += checkOpenDiagOpponent(piece);
+
+        int tempValue = checkOpenRowsOpponent(piece);
+        if (tempValue == Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//                System.out.println("Value of rows is " + tempValue);
+
+        result += tempValue;
+
+        tempValue = checkOpenColumnsOpponent(piece);
+        if (tempValue == Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//                System.out.println("Value of columns is " + tempValue);
+        result += tempValue;
+
+        tempValue = checkOpenDiagOpponent(piece);
+        if (tempValue == Integer.MAX_VALUE) return Integer.MAX_VALUE;
+//                System.out.println("Value of diags is " + tempValue);
+        result += tempValue;
+
         return result;
     }
 
@@ -608,13 +652,14 @@ public class TicTacToe implements IBoardGame, Cloneable {
      * consists on evaluating the game on the following formulae:
      * (Total number of open rows, columns and diagonals for the current player) -
      * (Total number of open rows, columns and diagonals for the opponent)
-     *
+     * In case the current player wins : the value is Integer.MaxValue
+     * In case the current player loses : the value is Integer.MinValue
      * @return int : the value of the calculated heuristic
      */
     @Override
     public int getH() {
         int result;
-        char lastPlayer = getCurrentPlayer() == 'X' ? 'Y' : 'X';
+        char lastPlayer = getCurrentPlayer() == 'X' ? '0' : 'X';
 
         if (lastPlayer == 'X') {
             result = checkOpenings('X') - checkOpeningsOpponent('0');

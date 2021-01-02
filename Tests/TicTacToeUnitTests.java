@@ -620,7 +620,7 @@ public class TicTacToeUnitTests {
                 "0X0",
                 "___");
         board1.setOpeningPiece('0');
-        Assert.assertEquals(0, board1.getH());
+        Assert.assertEquals(2, board1.getH());
 
     }
 
@@ -631,7 +631,7 @@ public class TicTacToeUnitTests {
                 "0_0",
                 "_X_");
         board1.setOpeningPiece('0');
-        Assert.assertEquals(-3, board1.getH());
+        Assert.assertEquals(-1, board1.getH());
 
     }
 
@@ -653,7 +653,7 @@ public class TicTacToeUnitTests {
                 "_X_",
                 "_0X");
         board1.setOpeningPiece('X');
-        Assert.assertEquals(6, board1.getH());
+        Assert.assertEquals(Integer.MAX_VALUE, board1.getH());
 
     }
 
@@ -687,8 +687,8 @@ public class TicTacToeUnitTests {
                 "__X");
         board1.setOpeningPiece('0');
         board2.setOpeningPiece('0');
-        Assert.assertEquals(-3, board1.getH());
-        Assert.assertEquals(-2, board2.getH());
+        Assert.assertEquals(-2, board1.getH());
+        Assert.assertEquals(-1, board2.getH());
 
     }
 
@@ -704,7 +704,7 @@ public class TicTacToeUnitTests {
                 "___");
         board1.setOpeningPiece('0');
         board2.setOpeningPiece('0');
-        Assert.assertEquals(4, board1.getH());
+        Assert.assertEquals(Integer.MAX_VALUE, board1.getH());
         Assert.assertEquals(3, board2.getH());
 
     }
